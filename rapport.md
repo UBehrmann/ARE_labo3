@@ -4,7 +4,7 @@
 
 ## Etudiants
 
-- 
+- Guillaume Gonin
 - Urs Behrmann
 
 # Table des matières
