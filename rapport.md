@@ -13,6 +13,7 @@
 - [Analyse](#analyse)
   - [Plan d’adressage](#plan-dadressage)
   - [schéma  bloc  de  l’interface  Avalon](#schéma--bloc--de--linterface--avalon)
+    - [Equations décodeur d'adresse](#equations-décodeur-dadresse)
 
 # Analyse
 
@@ -22,21 +23,29 @@ Parce que chaque adresse Avalon correspond à 4 octets (32 bits), ainsi les 14 b
 
 ## Plan d’adressage
 
-| Offset on bus AXI lightweight HPS-to-FPGA (relative to BA_LW_AXI) | Lecture (Rd='1')                     | Écriture (Wr='1')                    |
-| ----------------------------------------------------------------- | ------------------------------------ | ------------------------------------ |
-| 0x00_0000 – 0x00_0003                                             | Constante ID 32 bits                 | réservés                             |
-| 0x00_0004 – 0x00_00FF                                             | réservés                             | réservés                             |
-| 0x01_0000 – 0x01_0003                                             | Constante ID 32 bits                 | réservés                             |
-| 0x01_0004 – 0x01_0007                                             | leds (9..0), réservés (31..10)       | leds (9..0), réservés (31..10)       |
-| 0x01_0008 – 0x01_000B                                             | switches (9..0), réservés (31..10)   | réservés                             |
-| 0x01_000C – 0x01_000F                                             | keys (3..0), réservés (31..4)        | réservés                             |
-| 0x01_0010 – 0x01_0013                                             | lp36_status (1..0), réservés (31..2) | réservés                             |
-| 0x01_0014 – 0x01_0017                                             | lp36_sel (3..0), réservés (31..4)    | lp36_sel (3..0), réservés (31..4)    |
-| 0x01_0018 – 0x01_001B                                             | lp36_data (31..0)                    | lp36_data (31..0)                    |
-| 0x01_001C – 0x01_001F                                             | lp36_we (0), réservés (31..1)        | lp36_we (0), réservés (31..1)        |
-
-NB: Nous avons permis la lecture de toutes les entrées et sorties bien que certains valeurs on moins de sens à être lu par le CPU (par exemple lp36_we). Avec cette manière de faire, le développement et les tests de notres solution seront simplifiées.
+| Offset on bus AXI lightweight HPS-to-FPGA <br> (relative to BA_LW_AXI) | Lecture (Rd='1')                     | Écriture (Wr='1')                 |
+| ---------------------------------------------------------------------- | ------------------------------------ | --------------------------------- |
+| 0x00_0000 – 0x00_0003                                                  | Constante design ID 32 bits          | réservés                          |
+| 0x00_0004 – 0x00_00FF                                                  | réservés                             | réservés                          |
+| 0x01_0000 – 0x01_0003                                                  | Constante interface ID 32 bits       | réservés                          |
+| 0x01_0004 – 0x01_0007                                                  | réservés                             | leds (9..0), réservés (31..10)    |
+| 0x01_0008 – 0x01_000B                                                  | switches (9..0), réservés (31..10)   | réservés                          |
+| 0x01_000C – 0x01_000F                                                  | keys (3..0), réservés (31..4)        | réservés                          |
+| 0x01_0010 – 0x01_0013                                                  | lp36_status (1..0), réservés (31..2) | réservés                          |
+| 0x01_0014 – 0x01_0017                                                  | réservés                             | lp36_sel (3..0), réservés (31..4) |
+| 0x01_0018 – 0x01_001B                                                  | réservés                             | lp36_data (31..0)                 |
+| 0x01_001C – 0x01_FFFF                                                  | réservés                             | réservés                          |
 
 ## schéma  bloc  de  l’interface  Avalon
 
 ![schéma  bloc  de  l’interface  Avalon](imgs/avalon.png)
+
+### Equations décodeur d'adresse
+
+cs_rd_id = addr = 0x01_0000 * rd
+cs_wr_leds = addr = 0x01_0004 * wr
+cs_rd_switches = addr = 0x01_0008 * rd
+cs_rd_keys = addr = 0x01_000C * rd
+cs_rd_lp36_status = addr = 0x01_0010 * rd
+cs_wr_lp36_sel = addr = 0x01_0014 * wr
+cs_wr_lp36_data = addr = 0x01_0018 * wr
