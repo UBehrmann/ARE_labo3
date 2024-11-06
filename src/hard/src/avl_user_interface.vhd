@@ -104,19 +104,27 @@ BEGIN
   BEGIN
     readdatavalid_next_s <= '0'; --valeur par defaut
     readdata_next_s <= (OTHERS => '0'); --valeur par defaut
+
     IF avl_read_i = '1' THEN
       readdatavalid_next_s <= '1';
+
       CASE (to_integer(unsigned(avl_address_i))) IS
+
         WHEN INTERFACE_ID_C =>
           readdata_next_s <= INTERFACE_ID_C;
+
         WHEN KEY_ADDR_C =>
           readdata_next_s(3 DOWNTO 0) <= boutton_s;
+
         WHEN SWITCHES_ADDR_C =>
           readdata_next_s(9 DOWNTO 0) <= switch_i;
+
         WHEN LP36_STATUS_ADDR_C =>
           readdata_next_s(9 DOWNTO 0) <= lp36_status_s;
+
         WHEN OTHERS =>
           readdata_next_s <= OTHERS_VAL_C;
+
       END CASE;
     END IF;
   END PROCESS;
@@ -125,11 +133,15 @@ BEGIN
   read_register_p : PROCESS (avl_reset_i, avl_clk_i)
   BEGIN
     IF avl_reset_i = '1' THEN
+
       readdatavalid_reg_s <= '0';
       readdata_reg_s <= (OTHERS => '0');
+
     ELSIF rising_edge(avl_clk_i) THEN
+
       readdatavalid_reg_s <= readdatavalid_next_s;
       readdata_reg_s <= readdata_next_s;
+
     END IF;
   END PROCESS;
 
@@ -138,26 +150,29 @@ BEGIN
   write_register_p : PROCESS (avl_reset_i, avl_clk_i)
   BEGIN
     IF reset_i = '1' THEN
+
       led_reg_s <= (OTHERS => '0');
       lp36_data_reg_s <= (OTHERS => '0');
       lp36_sel_reg_s <= (OTHERS => '0');
+
     ELSIF rising_edge(avl_clk_i) THEN
+
       IF write_i = '1' THEN
+
         CASE (to_integer(unsigned(avl_address_i))) IS
-            --when 0 =>     -- read only
-            --    
-            --when 1 =>     -- read only
-            --    
-            --when 2 =>     -- read only
-            --    
+
           WHEN LEDS_ADDR_C =>
             led_reg_s <= writedata_i(9 DOWNTO 0);
+
           WHEN LP36_SEL_ADDR_C =>
             lp36_sel_reg_s <= writedata_i(3 DOWNTO 0);
+
           WHEN LP36_DATA_ADDR_C =>
             lp36_data_reg_s <= writedata_i;
+
           WHEN OTHERS =>
             NULL;
+
         END CASE;
       END IF;
     END IF;
