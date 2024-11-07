@@ -57,6 +57,7 @@ END avl_user_interface;
 ARCHITECTURE rtl OF avl_user_interface IS
 
   --| Components declaration |--------------------------------------------------------------
+  --| Constants declarations |--------------------------------------------------------------
   CONSTANT INTERFACE_ID_C : STD_LOGIC_VECTOR(31 DOWNTO 0) := x"12345678";
   CONSTANT LEDS_ADDR_C : STD_LOGIC_VECTOR(31 DOWNTO 0) := x"00000004";
   CONSTANT SWITCHES_ADDR_C : STD_LOGIC_VECTOR(31 DOWNTO 0) := x"00000008";
@@ -65,8 +66,6 @@ ARCHITECTURE rtl OF avl_user_interface IS
   CONSTANT LP36_SEL_ADDR_C : STD_LOGIC_VECTOR(31 DOWNTO 0) := x"00000014";
   CONSTANT LP36_DATA_ADDR_C : STD_LOGIC_VECTOR(31 DOWNTO 0) := x"00000018";
   CONSTANT OTHERS_VAL_C : STD_LOGIC_VECTOR(31 DOWNTO 0) := x"00000000";
-
-  --| Constants declarations |--------------------------------------------------------------
 
   --| Signals declarations   |--------------------------------------------------------------   
   SIGNAL led_reg_s : STD_LOGIC_VECTOR(9 DOWNTO 0);
@@ -77,6 +76,16 @@ ARCHITECTURE rtl OF avl_user_interface IS
   SIGNAL switches_s : STD_LOGIC_VECTOR(9 DOWNTO 0);
 
   SIGNAL lp36_status_s : STD_LOGIC_VECTOR(1 DOWNTO 0);
+
+  --| Types |----------------------------------------------------------------
+  TYPE state_t IS (
+    --General state
+    ATT,
+    GET_DATA,
+    WAIT1US,
+    -- Error
+    ERR
+  );
 
 BEGIN
 
@@ -179,4 +188,59 @@ BEGIN
   END PROCESS;
 
   -- Interface management
+
+  SIGNAL cs_wr_lp36_data_s : STD_LOGIC;
+  SIGNAL lp36_valide_s : STD_LOGIC;
+  SIGNAL 1us_done_s : STD_LOGIC;
+  SIGNAL start_timer_s : STD_LOGIC;
+
+  cs_wr_lp36_data_s <= avl_write_i AND (to_integer(unsigned(avl_address_i)) = LP36_DATA_ADDR_C);
+  lp36_valide_s <= lp36_status_i = "01";
+  
+  -- This process update the state of the state machine
+  fsm_reg : PROCESS (avl_reset_i, avl_clk_i) IS
+  BEGIN
+    IF (rst_i = '1') THEN
+      e_pres <= ATT;
+    ELSIF (rising_edge(avl_clk_i)) THEN
+      e_pres <= e_fut_s;
+    END IF;
+  END PROCESS fsm_reg;
+
+  dec_fut_sort : PROCESS (
+    cs_wr_lp36_data_s,
+    lp36_valide_s,
+    1us_done_s,
+    ) IS
+  BEGIN
+    -- Default values for generated signal
+    CASE e_pres IS
+      WHEN ATT =>
+        IF cs_wr_lp36_data_s = '1' THEN
+          e_fut_s <= GET_DATA;
+        ELSE
+          e_fut_s <= ATT;
+        END IF;
+      WHEN GET_DATA =>
+        IF lp36_valide_s = '0' THEN
+          e_fut_s <= ERR;
+        ELSE
+          e_fut_s <= WAIT1US;
+        END IF;
+      WHEN WAIT1US =>
+        IF 1us_done_s = '0' THEN
+          e_fut_s <= WAIT1US;
+        ELSE
+          e_fut_s <= ATT;
+        END IF;
+      WHEN ERR =>
+        IF lp36_valide_s = '1' THEN
+          e_fut_s <= ATT;
+        ELSE
+          e_fut_s <= ERR;
+        END IF;
+      WHEN OTHERS =>
+        e_fut_s <= ATT;
+    END CASE;
+  END PROCESS dec_fut_sort;
 END rtl;
