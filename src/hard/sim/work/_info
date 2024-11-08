@@ -1,0 +1,197 @@
+m255
+K4
+z2
+!s11e MIXED_VERSIONS
+13
+!s112 1.1
+!i10d 8192
+!i10e 25
+!i10f 100
+cModel Technology
+Z0 d/home/reds/ARE/src/hard/sim
+T_opt
+!s110 1731068327
+VCfXXCW@SSCbPP:PzWd6Cm1
+04 18 10 work avalon_console_sim behavioral 1
+=1-000ae431a4f1-672e01a7-24d2f-5fc6
+o-quiet -auto_acc_if_foreign -work work +acc
+tCvgOpt 0
+n@_opt
+OL;O;2020.1_1;71
+Eavalon_console_sim
+Z1 w1687263628
+Z2 DPx4 ieee 9 math_real 0 22 gNk<PdFJ<XNPcfef`f?Z81
+Z3 DPx4 ieee 11 numeric_std 0 22 aU^R8eGcicLcUFIaBQSL>3
+Z4 DPx3 std 6 textio 0 22 zE1`LPoLg^DX3Oz^4Fj1K3
+Z5 DPx4 ieee 14 std_logic_1164 0 22 cVAk:aDinOX8^VGI1ekP<3
+!i122 26
+R0
+Z6 8../src_tb/avalon_console_sim.vhd
+Z7 F../src_tb/avalon_console_sim.vhd
+l0
+Z8 L22 1
+VB^^Kfb@JG3h]D[UCQ>U6;0
+!s100 >mf0n65QYkDhB=TP9eJRi3
+Z9 OL;C;2020.1_1;71
+33
+Z10 !s110 1731068326
+!i10b 1
+Z11 !s108 1731068326.000000
+Z12 !s90 -reportprogress|300|-2008|-work|work|../src_tb/avalon_console_sim.vhd|
+Z13 !s107 ../src_tb/avalon_console_sim.vhd|
+!i113 0
+Z14 o-2008 -work work
+Z15 tExplicit 1 CvgOpt 0
+Abehavioral
+Z16 DEx4 work 18 avl_user_interface 0 22 J90_a[XVCF8hNG6<9fm?U1
+R2
+R3
+R4
+R5
+DEx4 work 18 avalon_console_sim 0 22 B^^Kfb@JG3h]D[UCQ>U6;0
+!i122 26
+l74
+L25 90
+V]0AfcPkM3FcIRmie:69P33
+!s100 ]<SkDa?X90UVnF3Y4Lc9P2
+R9
+33
+R10
+!i10b 1
+R11
+R12
+R13
+!i113 0
+R14
+R15
+Eavl_user_interface
+Z17 w1731068316
+R3
+R4
+R5
+!i122 25
+R0
+Z18 8../src/avl_user_interface.vhd
+Z19 F../src/avl_user_interface.vhd
+l0
+Z20 L33 1
+VJ90_a[XVCF8hNG6<9fm?U1
+!s100 d7TC[Qm9_if3L>R^U__<20
+R9
+33
+R10
+!i10b 1
+R11
+Z21 !s90 -reportprogress|300|-2008|-work|work|../src/avl_user_interface.vhd|
+Z22 !s107 ../src/avl_user_interface.vhd|
+!i113 0
+R14
+R15
+Artl
+Z23 DEx4 work 33 interface_con_80p_max10_prot_0x20 0 22 WJVn<>]WDcmnG>1jM6B]G0
+Z24 DEx4 work 5 timer 0 22 N4[FbLcTD_OWYFB`>=zae1
+R3
+R4
+R5
+R16
+!i122 25
+l121
+L57 258
+VUPi6kBz>OYABzV?Q=8Bn`3
+!s100 l2QhT@HE?07oNDW?hB1S10
+R9
+33
+R10
+!i10b 1
+R11
+R21
+R22
+!i113 0
+R14
+R15
+Einterface_con_80p_max10_prot_0x20
+Z25 w1659629276
+R3
+R4
+R5
+!i122 23
+R0
+Z26 8../src/interface_con_80p_max10_prot_0x20.vhd
+Z27 F../src/interface_con_80p_max10_prot_0x20.vhd
+l0
+R20
+VWJVn<>]WDcmnG>1jM6B]G0
+!s100 dV]MhgC1_hhYTgbi7k`D@2
+R9
+33
+R10
+!i10b 1
+R11
+Z28 !s90 -reportprogress|300|-2008|-work|work|../src/interface_con_80p_max10_prot_0x20.vhd|
+Z29 !s107 ../src/interface_con_80p_max10_prot_0x20.vhd|
+!i113 0
+R14
+R15
+Artl
+R3
+R4
+R5
+R23
+!i122 23
+l70
+L44 107
+Vdh1Q1lfag1c29<L49m`jF0
+!s100 JN6kHJ@^=Jea9J?45B9dh3
+R9
+33
+R10
+!i10b 1
+R11
+R28
+R29
+!i113 0
+R14
+R15
+Etimer
+Z30 w1731061606
+R3
+R4
+R5
+!i122 24
+R0
+Z31 8../src/timer.vhd
+Z32 F../src/timer.vhd
+l0
+R8
+VN4[FbLcTD_OWYFB`>=zae1
+!s100 D_@`A?VZRbMnYhbIYFIE11
+R9
+33
+R10
+!i10b 1
+R11
+Z33 !s90 -reportprogress|300|-2008|-work|work|../src/timer.vhd|
+Z34 !s107 ../src/timer.vhd|
+!i113 0
+R14
+R15
+Acomport
+R3
+R4
+R5
+R24
+!i122 24
+l40
+L33 26
+V=GQHlkShUo2`C;W?5FY3V2
+!s100 8bfLQVLa8AWZoJnZA8DHR2
+R9
+33
+R10
+!i10b 1
+R11
+R33
+R34
+!i113 0
+R14
+R15

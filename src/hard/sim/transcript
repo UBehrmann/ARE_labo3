@@ -1,0 +1,103 @@
+# //  Questa Sim-64
+# //  Version 2020.1_1 linux_x86_64 Mar  4 2020
+# //
+# //  Copyright 1991-2020 Mentor Graphics Corporation
+# //  All Rights Reserved.
+# //
+# //  QuestaSim and its associated documentation contain trade
+# //  secrets and commercial or financial information that are the property of
+# //  Mentor Graphics Corporation and are privileged, confidential,
+# //  and exempt from disclosure under the Freedom of Information Act,
+# //  5 U.S.C. Section 552. Furthermore, this information
+# //  is prohibited from disclosure under the Trade Secrets Act,
+# //  18 U.S.C. Section 1905.
+# //
+# do ../script/run_avalon_sim.tcl
+# ** Warning: (vlib-34) Library already exists at "work".
+# QuestaSim-64 vmap 2020.1_1 Lib Mapping Utility 2020.03 Mar  4 2020
+# vmap work work 
+# Modifying modelsim.ini
+# QuestaSim-64 vcom 2020.1_1 Compiler 2020.03 Mar  4 2020
+# Start time: 13:18:46 on Nov 08,2024
+# vcom -reportprogress 300 -2008 -work work ../src/interface_con_80p_max10_prot_0x20.vhd 
+# -- Loading package STANDARD
+# -- Loading package TEXTIO
+# -- Loading package std_logic_1164
+# -- Loading package NUMERIC_STD
+# -- Compiling entity interface_con_80p_max10_prot_0x20
+# -- Compiling architecture rtl of interface_con_80p_max10_prot_0x20
+# End time: 13:18:46 on Nov 08,2024, Elapsed time: 0:00:00
+# Errors: 0, Warnings: 0
+# QuestaSim-64 vcom 2020.1_1 Compiler 2020.03 Mar  4 2020
+# Start time: 13:18:46 on Nov 08,2024
+# vcom -reportprogress 300 -2008 -work work ../src/timer.vhd 
+# -- Loading package STANDARD
+# -- Loading package TEXTIO
+# -- Loading package std_logic_1164
+# -- Loading package NUMERIC_STD
+# -- Compiling entity timer
+# -- Compiling architecture comport of timer
+# End time: 13:18:46 on Nov 08,2024, Elapsed time: 0:00:00
+# Errors: 0, Warnings: 0
+# QuestaSim-64 vcom 2020.1_1 Compiler 2020.03 Mar  4 2020
+# Start time: 13:18:46 on Nov 08,2024
+# vcom -reportprogress 300 -2008 -work work ../src/avl_user_interface.vhd 
+# -- Loading package STANDARD
+# -- Loading package TEXTIO
+# -- Loading package std_logic_1164
+# -- Loading package NUMERIC_STD
+# -- Compiling entity avl_user_interface
+# -- Compiling architecture rtl of avl_user_interface
+# -- Loading entity timer
+# -- Loading entity interface_con_80p_max10_prot_0x20
+# End time: 13:18:46 on Nov 08,2024, Elapsed time: 0:00:00
+# Errors: 0, Warnings: 0
+# QuestaSim-64 vcom 2020.1_1 Compiler 2020.03 Mar  4 2020
+# Start time: 13:18:46 on Nov 08,2024
+# vcom -reportprogress 300 -2008 -work work ../src_tb/avalon_console_sim.vhd 
+# -- Loading package STANDARD
+# -- Loading package TEXTIO
+# -- Loading package std_logic_1164
+# -- Loading package NUMERIC_STD
+# -- Loading package MATH_REAL
+# -- Compiling entity avalon_console_sim
+# -- Compiling architecture Behavioral of avalon_console_sim
+# -- Loading entity avl_user_interface
+# End time: 13:18:46 on Nov 08,2024, Elapsed time: 0:00:00
+# Errors: 0, Warnings: 0
+# vsim -voptargs=""+acc"" work.avalon_console_sim 
+# Start time: 13:18:46 on Nov 08,2024
+# ** Note: (vsim-3813) Design is being optimized due to module recompilation...
+# ** Note: (vopt-143) Recognized 1 FSM in architecture body "avl_user_interface(rtl)".
+# Loading std.standard
+# Loading std.textio(body)
+# Loading ieee.std_logic_1164(body)
+# Loading ieee.numeric_std(body)
+# Loading ieee.math_real(body)
+# Loading work.avalon_console_sim(behavioral)#1
+# Loading work.avl_user_interface(rtl)#1
+# Loading work.interface_con_80p_max10_prot_0x20(rtl)#1
+# Loading work.timer(comport)#1
+# ** Warning: (vsim-8683) Uninitialized out port /avalon_console_sim/DUT/avl_waitrequest_o has no driver.
+# This port will contribute value (U) to the signal network.
+# ** Warning: (vsim-8683) Uninitialized out port /avalon_console_sim/DUT/lp36_we_o has no driver.
+# This port will contribute value (U) to the signal network.
+# 0
+# 1.0
+# /opt/tools_reds
+# linux
+# FALSE
+# 10
+# 10
+# 4
+# 20
+# 0
+# ** Note: (vsim-12125) Error and warning message counts have been reset to '0' because of 'restart'.
+# ** Note: (vsim-8009) Loading existing optimized design _opt
+# ** Warning: (vsim-8683) Uninitialized out port /avalon_console_sim/DUT/avl_waitrequest_o has no driver.
+# This port will contribute value (U) to the signal network.
+# ** Warning: (vsim-8683) Uninitialized out port /avalon_console_sim/DUT/lp36_we_o has no driver.
+# This port will contribute value (U) to the signal network.
+# R
+# End time: 13:20:16 on Nov 08,2024, Elapsed time: 0:01:30
+# Errors: 0, Warnings: 2

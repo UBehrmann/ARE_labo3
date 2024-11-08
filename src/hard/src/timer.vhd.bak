@@ -21,7 +21,7 @@ use ieee.numeric_std.all;
 
 entity timer is
     generic (
-        T1_g : natural range 1 to 1023 := 2);
+        T1_g : natural range 1 to 1023 := 2;
     port (
         clock_i    : in  std_logic;
         reset_i    : in  std_logic;

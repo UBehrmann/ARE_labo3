@@ -84,6 +84,12 @@ ARCHITECTURE rtl OF avl_user_interface IS
 
   --| Constants declarations |--------------------------------------------------------------
   CONSTANT INTERFACE_ID_C : STD_LOGIC_VECTOR(31 DOWNTO 0) := x"12345678";
+  CONSTANT LEDS_ADDR_C : STD_LOGIC_VECTOR(31 DOWNTO 0) := x"00000004";
+  CONSTANT SWITCHES_ADDR_C : STD_LOGIC_VECTOR(31 DOWNTO 0) := x"00000008";
+  CONSTANT KEY_ADDR_C : STD_LOGIC_VECTOR(31 DOWNTO 0) := x"0000000C";
+  CONSTANT LP36_STATUS_ADDR_C : STD_LOGIC_VECTOR(31 DOWNTO 0) := x"00000010";
+  CONSTANT LP36_SEL_ADDR_C : STD_LOGIC_VECTOR(31 DOWNTO 0) := x"00000014";
+  CONSTANT LP36_DATA_ADDR_C : STD_LOGIC_VECTOR(31 DOWNTO 0) := x"00000018";
   CONSTANT OTHERS_VAL_C : STD_LOGIC_VECTOR(31 DOWNTO 0) := x"00000000";
 
   --| Signals declarations   |--------------------------------------------------------------   
@@ -95,15 +101,10 @@ ARCHITECTURE rtl OF avl_user_interface IS
   SIGNAL switches_s : STD_LOGIC_VECTOR(9 DOWNTO 0);
 
   SIGNAL lp36_status_s : STD_LOGIC_VECTOR(1 DOWNTO 0);
-  
-  signal readdatavalid_next_s : std_logic;
-  signal readdatavalid_reg_s : std_logic;
-  signal readdata_next_s : std_logic_vector(31 downto 0);
-  signal readdata_reg_s : std_logic_vector(31 downto 0);
 
   SIGNAL cs_wr_lp36_data_s : STD_LOGIC;
   SIGNAL lp36_valide_s : STD_LOGIC;
-  SIGNAL us_done_s : STD_LOGIC;
+  SIGNAL 1us_done_s : STD_LOGIC;
   SIGNAL start_timer_s : STD_LOGIC;
   SIGNAL lp36_we_s : STD_LOGIC;
 
@@ -116,7 +117,6 @@ ARCHITECTURE rtl OF avl_user_interface IS
     -- Error
     ERR
   );
-  signal e_pres, e_fut_s : state_t;
 
 BEGIN
 
@@ -127,9 +127,9 @@ BEGIN
 
   lp36_status_s <= lp36_status_i;
 
-  cs_wr_lp36_data_s <= '1' when (avl_write_i = '1') AND (to_integer(unsigned(avl_address_i)) = 6) else '0';
+  cs_wr_lp36_data_s <= avl_write_i AND (to_integer(unsigned(avl_address_i)) = LP36_DATA_ADDR_C);
 
-  lp36_valide_s <= '1' when lp36_status_i = "01" else '0';
+  lp36_valide_s <= lp36_status_i = "01";
 
   -- Output signals
 
@@ -154,16 +154,16 @@ BEGIN
 
       CASE (to_integer(unsigned(avl_address_i))) IS
 
-        WHEN 0 =>
+        WHEN INTERFACE_ID_C =>
           readdata_next_s <= INTERFACE_ID_C;
 
-        WHEN 2 =>
-          readdata_next_s(9 DOWNTO 0) <= switch_i;
-			 
-        WHEN 3 =>
+        WHEN KEY_ADDR_C =>
           readdata_next_s(3 DOWNTO 0) <= boutton_s;
 
-        WHEN 4 =>
+        WHEN SWITCHES_ADDR_C =>
+          readdata_next_s(9 DOWNTO 0) <= switch_i;
+
+        WHEN LP36_STATUS_ADDR_C =>
           readdata_next_s(0) <= lp36_valide_s;
           readdata_next_s(1) <= lp36_we_s;
 
@@ -195,14 +195,12 @@ BEGIN
   write_register_p : PROCESS (
     avl_reset_i,
     avl_clk_i,
-	 avl_write_i,
-	 avl_writedata_i,
     led_reg_s,
     lp36_data_reg_s,
     lp36_sel_reg_s
     )
   BEGIN
-    IF avl_reset_i = '1' THEN
+    IF reset_i = '1' THEN
 
       led_reg_s <= (OTHERS => '0');
       lp36_data_reg_s <= (OTHERS => '0');
@@ -210,23 +208,20 @@ BEGIN
 
     ELSIF rising_edge(avl_clk_i) THEN
 
-      IF avl_write_i = '1' THEN
+      IF write_i = '1' THEN
 
         CASE (to_integer(unsigned(avl_address_i))) IS
 
-          WHEN 1 =>
-            led_reg_s <= avl_writedata_i(9 DOWNTO 0);
+          WHEN LEDS_ADDR_C =>
+            led_reg_s <= writedata_i(9 DOWNTO 0);
 
-          WHEN 5 =>
-			   -- Write only if not in transfering mode
-			   IF lp36_we_s = '0' THEN
-              lp36_sel_reg_s <= avl_writedata_i(3 DOWNTO 0);
-				END IF;
+          WHEN LP36_SEL_ADDR_C =>
+            lp36_sel_reg_s <= writedata_i(3 DOWNTO 0);
 
-          WHEN 6 =>
+          WHEN LP36_DATA_ADDR_C =>
             -- Write only if not in transfering mode
             IF lp36_we_s = '0' THEN
-              lp36_data_reg_s <= avl_writedata_i;
+              lp36_data_reg_s <= writedata_i;
             END IF;
 
           WHEN OTHERS =>
@@ -244,25 +239,27 @@ BEGIN
     lp36_we_i => lp36_we_s,
     lp36_sel_i => lp36_sel_reg_s,
     lp36_data_i => lp36_data_reg_s,
-    lp36_status_o => lp36_status_s
+    lp36_status_o => lp36_status_s,
+    GPIO_0_io => GPIO_0_io,
+    GPIO_1_io => GPIO_1_io
   );
 
   -- Timer management
 
   timer_boutton : timer
-  GENERIC MAP(T1_g => 50)
+  GENERIC MAP(T1_g => T1_g, T2_g => T2_g)
   PORT MAP(
     clock_i => avl_clk_i,
     reset_i => avl_reset_i,
     start_i => start_timer_s,
-    trigger_o => us_done_s
+    trigger1_o => 1us_done_s
   );
 
   -- State machine
   -- This process update the state of the state machine
   fsm_reg : PROCESS (avl_reset_i, avl_clk_i) IS
   BEGIN
-    IF (avl_reset_i = '1') THEN
+    IF (rst_i = '1') THEN
       e_pres <= ATT;
     ELSIF (rising_edge(avl_clk_i)) THEN
       e_pres <= e_fut_s;
@@ -272,7 +269,7 @@ BEGIN
   dec_fut_sort : PROCESS (
     cs_wr_lp36_data_s,
     lp36_valide_s,
-    us_done_s,
+    1us_done_s,
     start_timer_s,
     lp36_we_s
     ) IS
@@ -296,7 +293,7 @@ BEGIN
           start_timer_s <= '1';
         END IF;
       WHEN WAIT1US =>
-        IF us_done_s = '0' THEN
+        IF 1us_done_s = '0' THEN
           e_fut_s <= WAIT1US;
           lp36_we_s <= '1';
         ELSE
