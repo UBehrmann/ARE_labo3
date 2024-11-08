@@ -21,6 +21,7 @@
     - [Write lp36 sel](#write-lp36-sel)
     - [Liaison avec la Max10](#liaison-avec-la-max10)
       - [MSS pour la liaison Max10](#mss-pour-la-liaison-max10)
+      - [1us](#1us)
 
 # Analyse
 
@@ -108,6 +109,10 @@ On a décidé d'utilisé un feedback du `write_enable` pour indiquer au CPU que 
 ![Schéma bloc MSS](imgs/interface_avalon-MSS_symb.svg)
 
 ![MSS pour la liaison Max10](imgs/interface_avalon-MSS.svg)
+
+#### 1us
+
+Pour avoir un cycle d'écriture de 1us, on doit déterminer combien de cycles de l'horloge du FPGA correspondent à 1us. Pour cela, on utilise la fréquence de l'horloge du bus Avalon qui est de 50MHz. Cela nous donne que un cycle de l'horloge correspond à 20ns. Pour avoir 1us, on doit donc attendre 50 cycles de l'horloge.
 
 
 
