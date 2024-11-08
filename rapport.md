@@ -22,6 +22,8 @@
     - [Liaison avec la Max10](#liaison-avec-la-max10)
       - [MSS pour la liaison Max10](#mss-pour-la-liaison-max10)
       - [1us](#1us)
+- [Tests](#tests)
+  - [Simulation avec la console TCL-TK](#simulation-avec-la-console-tcl-tk)
 
 # Analyse
 
@@ -86,11 +88,15 @@ Pour l'écriture des leds, on active le signal de contrôle `wr_leds` et on enre
 
 Pour l'écriture des données du lp36, on active le signal de contrôle `wr_lp36_data` et on enregistre les données dans un registre qui est ensuite utilisé pour envoyer les données au lp36.
 
+Durant l'écriture sur la Max10, on bloque l'écriture depuis le CPU des données pour ne pas créer des erreurs. 
+
 ![Write lp36 data](imgs/interface_avalon-wr_data.svg)
 
 ### Write lp36 sel
 
-Pour l'écriture du selecteur du lp36, on active le signal de contrôle `wr_lp36_sel` et on enregistre les données dans un registre qui est ensuite utilisé pour envoyer les données au lp36.
+Pour l'écriture du sélecteur du lp36, on active le signal de contrôle `wr_lp36_sel` et on enregistre les données dans un registre qui est ensuite utilisé pour envoyer les données au lp36.
+
+Durant l'écriture sur la Max10, on bloque l'écriture depuis le CPU du sélecteur pour ne pas créer des erreurs.
 
 ![Write lp36 sel](imgs/interface_avalon-wr_sel.svg)
 
@@ -106,6 +112,10 @@ On a décidé d'utilisé un feedback du `write_enable` pour indiquer au CPU que 
 
 #### MSS pour la liaison Max10
 
+On a décidé d'utilisé une machine séquentielle synchrone pour la liaison avec la Max10. La raison principale étant que l'écriture doit être actif pendant un cycle d'écriture (1us).
+
+Pour cela, on a décidé d'utiliser un MSS avec 4 états: `ATT`, `GET_DATA`, `WAIT 1US` et `ERROR`.
+
 ![Schéma bloc MSS](imgs/interface_avalon-MSS_symb.svg)
 
 ![MSS pour la liaison Max10](imgs/interface_avalon-MSS.svg)
@@ -113,6 +123,12 @@ On a décidé d'utilisé un feedback du `write_enable` pour indiquer au CPU que 
 #### 1us
 
 Pour avoir un cycle d'écriture de 1us, on doit déterminer combien de cycles de l'horloge du FPGA correspondent à 1us. Pour cela, on utilise la fréquence de l'horloge du bus Avalon qui est de 50MHz. Cela nous donne que un cycle de l'horloge correspond à 20ns. Pour avoir 1us, on doit donc attendre 50 cycles de l'horloge.
+
+# Tests
+
+## Simulation avec la console TCL-TK
+
+Pour tester l'interface, on a utilisé la console TCL-TK pour simuler les entrées du CPU. On a crée une série de commandes dans la console pour simuler les lectures et écritures sur l'interface. 
 
 
 
