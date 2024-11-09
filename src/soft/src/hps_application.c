@@ -21,7 +21,8 @@
  * Ver    Date        Student      Comments
  * 1      5.11.2024   GoninG       Starter routine done (not tested)
  * 2      5.11.2024   GoninG       Loop routine done (not tested)
- * 3      8.11.2024   GoninG       Updated the way we use lp36_wr and read lp36_status
+ * 3      8.11.2024   GoninG       Updated the way we use lp36_wr and read lp36_status (not tested)
+ * 4      8.11.2024   GoninG       Removed some bugs after test
  *
 *****************************************************************************************/
 #include <stdint.h>
@@ -32,7 +33,7 @@
 int __auto_semihosting;
 
 // Base address
-#define INTERFACE_BASE_ADD   ((AXI_LW_HPS_FPGA_BASE_ADD) + 0x01000000)
+#define INTERFACE_BASE_ADD   ((AXI_LW_HPS_FPGA_BASE_ADD) + 0x010000)
 
 // ACCESS MACROS
 #define INTERFACE_REG(_x_)   *(volatile uint32_t *)(INTERFACE_BASE_ADD + _x_) // _x_ is an offset with respect to the base address
@@ -101,24 +102,28 @@ int main(void){
     INTERFACE_REG(LEDS_OFF) = 0 & LEDS_MASK;
 
     //3
-	while(INTERFACE_REG(LP36_WR_OFF) == WR_ENABLED || (INTERFACE_REG(LP36_STATUS_OFF) & LP36_STATUS_MASK)) {
-		INTERFACE_REG(LP36_SEL_OFF) = LP36_SEL_SECOND1 & LP36_SEL_MASK;
-	}
+    do {
+    	INTERFACE_REG(LP36_SEL_OFF) = LP36_SEL_SECOND1 & LP36_SEL_MASK;
+    } while(INTERFACE_REG(LP36_WR_OFF) == WR_ENABLED || (INTERFACE_REG(LP36_STATUS_OFF) & LP36_STATUS_MASK) == 0);
+
     INTERFACE_REG(LP36_DATA_OFF) = 0 & LP36_DATA_SEC1_MASK;
 
-    while(INTERFACE_REG(LP36_WR_OFF) == WR_ENABLED || (INTERFACE_REG(LP36_STATUS_OFF) & LP36_STATUS_MASK)) {
+    do {
     	INTERFACE_REG(LP36_SEL_OFF) = LP36_SEL_SECOND2 & LP36_SEL_MASK;
-	}
+    } while(INTERFACE_REG(LP36_WR_OFF) == WR_ENABLED || (INTERFACE_REG(LP36_STATUS_OFF) & LP36_STATUS_MASK) == 0);
+
     INTERFACE_REG(LP36_DATA_OFF) = 0 & LP36_DATA_SEC2_MASK;
 
-    while(INTERFACE_REG(LP36_WR_OFF) == WR_ENABLED || (INTERFACE_REG(LP36_STATUS_OFF) & LP36_STATUS_MASK)) {
+    do {
     	INTERFACE_REG(LP36_SEL_OFF) = LP36_SEL_2LINE & LP36_SEL_MASK;
-	}
+    } while(INTERFACE_REG(LP36_WR_OFF) == WR_ENABLED || (INTERFACE_REG(LP36_STATUS_OFF) & LP36_STATUS_MASK) == 0);
+
     INTERFACE_REG(LP36_DATA_OFF) = 0 & LP36_DATA_LINE_MASK;
 
-    while(INTERFACE_REG(LP36_WR_OFF) == WR_ENABLED || (INTERFACE_REG(LP36_STATUS_OFF) & LP36_STATUS_MASK)) {
+    do {
     	INTERFACE_REG(LP36_SEL_OFF) = LP36_SEL_SQUARE & LP36_SEL_MASK;
-	}
+    } while(INTERFACE_REG(LP36_WR_OFF) == WR_ENABLED || (INTERFACE_REG(LP36_STATUS_OFF) & LP36_STATUS_MASK) == 0);
+
     INTERFACE_REG(LP36_DATA_OFF) = 0 & LP36_DATA_SQUA_MASK;
 
     //4
@@ -153,19 +158,19 @@ int main(void){
         5. Pression sur KEY3 :
             Eteindre toutes les leds de la carte Max10_leds. */
 
-      		// check if the MAX10 is always connected and the good status
+		// check if the MAX10 is always connected and the good status
        	val = INTERFACE_REG(LP36_STATUS_OFF) & LP36_STATUS_MASK;
-      		if(val != VALID_CONFIG_STATUS) {
-      			printf("MAX10 Config status:%x\n", val);
-      			return -1;
-      		}
+	    if(val != VALID_CONFIG_STATUS) {
+		printf("MAX10 Config status:%x\n", val);
+	        return -1;
+	    }
 
         //1
         val = INTERFACE_REG(SWITCHS_OFF) & SWITCHS_MASK;
         INTERFACE_REG(LEDS_OFF) = val & LEDS_MASK;
 
         //2
-        val = (val >> 9); //slide SW8 on bit 0
+        val = (val >> 8); //slide SW8 on bit 0
         switch (val)
         {
         case 0:
@@ -175,20 +180,24 @@ int main(void){
         case 1:
             maskToUse = LP36_DATA_SEC2_MASK;
             buf = 1;
+            break;
         case 2:
             maskToUse = LP36_DATA_LINE_MASK;
             buf = 2;
+            break;
         case 3:
             maskToUse = LP36_DATA_SQUA_MASK;
             buf = 3;
+            break;
         }
 
-        while(INTERFACE_REG(LP36_WR_OFF) == WR_ENABLED || (INTERFACE_REG(LP36_STATUS_OFF) & LP36_STATUS_MASK)) { //while lp36_wr == 1 or thrown an error we retry to write
-        	INTERFACE_REG(LP36_SEL_OFF) = buf & LP36_SEL_MASK;
-        }
+        do {
+            INTERFACE_REG(LP36_SEL_OFF) = buf & LP36_SEL_MASK;
+        } while(INTERFACE_REG(LP36_WR_OFF) == WR_ENABLED || (INTERFACE_REG(LP36_STATUS_OFF) & LP36_STATUS_MASK) == 0); //while lp36_wr == 1 or thrown an error we retry to write
+
 
         //3
-        val = (INTERFACE_REG(KEYS_OFF) & KEYS_MASK) & KEY1_0_MASK;
+        val = (~(INTERFACE_REG(KEYS_OFF) & KEYS_MASK)) & KEY1_0_MASK;
         buf = (INTERFACE_REG(SWITCHS_OFF) & SWITCHS_MASK) & SW7_0_MASK;
         if(val == 0) INTERFACE_REG(LP36_DATA_OFF) = (INTERFACE_REG(LP36_DATA_OFF) & (~SW7_0_MASK)) | (buf & maskToUse); //to keep shifted values and change only the 8 relevant bits
         else if (val == 1) INTERFACE_REG(LP36_DATA_OFF) = 0b10101010101010101010101010101010 & maskToUse;
@@ -196,32 +205,35 @@ int main(void){
         else if (val == 3) INTERFACE_REG(LP36_DATA_OFF) = 0b11111111111111111111111111111111 & maskToUse;
 
         //4
-        buf = (INTERFACE_REG(KEYS_OFF) & KEYS_MASK) & KEY2_MASK;
+        buf = (~(INTERFACE_REG(KEYS_OFF) & KEYS_MASK)) & KEY2_MASK;
         if((buf != 0) && (val == 0) && (maskToUse == LP36_DATA_SQUA_MASK)) { //if copy switch mode and square mode
             INTERFACE_REG(LP36_DATA_OFF) = INTERFACE_REG(LP36_DATA_OFF) << SQUARE_LINE_SIZE;
         }
 
         //5
-        val = (INTERFACE_REG(KEYS_OFF) & KEYS_MASK) & KEY3_MASK;
-        if(val != 0){
-        	while(INTERFACE_REG(LP36_WR_OFF) == WR_ENABLED || (INTERFACE_REG(LP36_STATUS_OFF) & LP36_STATUS_MASK)) {
-        		INTERFACE_REG(LP36_SEL_OFF) = 0 & LP36_SEL_MASK;
-			}
+        val = (~(INTERFACE_REG(KEYS_OFF) & KEYS_MASK)) & KEY3_MASK;
+	if(val != 0){
+	    do {
+		INTERFACE_REG(LP36_SEL_OFF) = 0 & LP36_SEL_MASK;
+	    } while(INTERFACE_REG(LP36_WR_OFF) == WR_ENABLED || (INTERFACE_REG(LP36_STATUS_OFF) & LP36_STATUS_MASK) == 0);
             INTERFACE_REG(LP36_DATA_OFF) = 0 & LP36_DATA_SEC1_MASK;
 
-            while(INTERFACE_REG(LP36_WR_OFF) == WR_ENABLED || (INTERFACE_REG(LP36_STATUS_OFF) & LP36_STATUS_MASK)) {
+            do {
             	INTERFACE_REG(LP36_SEL_OFF) = 1 & LP36_SEL_MASK;
-			}
+            } while(INTERFACE_REG(LP36_WR_OFF) == WR_ENABLED || (INTERFACE_REG(LP36_STATUS_OFF) & LP36_STATUS_MASK) == 0);
+
             INTERFACE_REG(LP36_DATA_OFF) = 0 & LP36_DATA_SEC2_MASK;
 
-            while(INTERFACE_REG(LP36_WR_OFF) == WR_ENABLED || (INTERFACE_REG(LP36_STATUS_OFF) & LP36_STATUS_MASK)) {
+            do {
             	INTERFACE_REG(LP36_SEL_OFF) = 2 & LP36_SEL_MASK;
-			}
+            } while(INTERFACE_REG(LP36_WR_OFF) == WR_ENABLED || (INTERFACE_REG(LP36_STATUS_OFF) & LP36_STATUS_MASK) == 0);
+
             INTERFACE_REG(LP36_DATA_OFF) = 0 & LP36_DATA_LINE_MASK;
 
-            while(INTERFACE_REG(LP36_WR_OFF) == WR_ENABLED || (INTERFACE_REG(LP36_STATUS_OFF) & LP36_STATUS_MASK)) {
+            do {
             	INTERFACE_REG(LP36_SEL_OFF) = 3 & LP36_SEL_MASK;
-			}
+            } while(INTERFACE_REG(LP36_WR_OFF) == WR_ENABLED || (INTERFACE_REG(LP36_STATUS_OFF) & LP36_STATUS_MASK) == 0);
+
             INTERFACE_REG(LP36_DATA_OFF) = 0 & LP36_DATA_SQUA_MASK;
         }
     }
