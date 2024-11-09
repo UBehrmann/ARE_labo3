@@ -42,7 +42,7 @@ Parce que chaque adresse Avalon correspond à 4 octets (32 bits), ainsi les 14 b
 | 0x01_0008 – 0x01_000B                                                  | switches (9..0), réservés (31..10)                  | réservés                          |
 | 0x01_000C – 0x01_000F                                                  | keys (3..0), réservés (31..4)                       | réservés                          |
 | 0x01_0010 – 0x01_0013                                                  | lp36_status (0), write_enable (1), réservés (31..2) | réservés                          |
-| 0x01_0014 – 0x01_0017                                                  | réservés                                            | lp36_sel (3..0), réservés (31..4) |
+| 0x01_0014 – 0x01_0017                                                  | lp36_data (31..0)                                   | lp36_sel (3..0), réservés (31..4) |
 | 0x01_0018 – 0x01_001B                                                  | réservés                                            | lp36_data (31..0)                 |
 | 0x01_001C – 0x01_FFFF                                                  | réservés                                            | réservés                          |
 
@@ -54,13 +54,14 @@ Parce que chaque adresse Avalon correspond à 4 octets (32 bits), ainsi les 14 b
 
 #### Equations décodeur d'adresse <!-- omit in toc -->
 
-cs_rd_id = addr = 0x01_0000 * rd
-cs_wr_leds = addr = 0x01_0004 * wr
-cs_rd_switches = addr = 0x01_0008 * rd
-cs_rd_keys = addr = 0x01_000C * rd
-cs_rd_lp36_status = addr = 0x01_0010 * rd
-cs_wr_lp36_sel = addr = 0x01_0014 * wr
-cs_wr_lp36_data = addr = 0x01_0018 * wr
+cs_rd_id => addr = 0x01_0000 * rd;
+cs_wr_leds => addr = 0x01_0004 * wr;
+cs_rd_switches => addr = 0x01_0008 * rd;
+cs_rd_keys => addr = 0x01_000C * rd;
+cs_rd_lp36_status => addr = 0x01_0010 * rd;
+cs_rd_lp36_data => addr = 0x01_0018 * rd;
+cs_wr_lp36_sel => addr = 0x01_0014 * wr;
+cs_wr_lp36_data => addr = 0x01_0018 * wr;
 
 ### Read ID, switches et keys
 
@@ -123,6 +124,9 @@ Pour cela, on a décidé d'utiliser un MSS avec 4 états: `ATT`, `GET_DATA`, `WA
 #### 1us
 
 Pour avoir un cycle d'écriture de 1us, on doit déterminer combien de cycles de l'horloge du FPGA correspondent à 1us. Pour cela, on utilise la fréquence de l'horloge du bus Avalon qui est de 50MHz. Cela nous donne que un cycle de l'horloge correspond à 20ns. Pour avoir 1us, on doit donc attendre 50 cycles de l'horloge.
+
+#### Code C
+Dans le code C, on a choisi d'écrire toujours 0 pour les bits qui nous concerne pas (exemple: écriture dans les 10 leds: valeur écrite: 0x000003FF) bien que par la suite la partie FPGA s'assure n'écrire que les bits qui le doivent (les 10 derniers dans notre exemple). L'usage de macro C nous garantie une meilleur lisibilité du code et simplifie grandement les adaptation futures de celui-ci (par exemple si notre plan d'addressage change). Comme mentionné plus tôt dans ce rapport, pour pouvoir écrire dans lp36_sel il faut que lp36_wr soit à zéro et que le status de la max10 soit valide (c'est à dire lp36_status == 0b01). Ceci est donc fais dans le code avec une boucle d'écriture dans lp36_sel jusqu'à ce que ces deux conditions soit valide. L'usage d'une boucle peut sembler risqué mais wr étant maintenu que 1us la boucle ne devrait jamais durer trop longtemps et donc ne devrais pas mettre à mal le système.
 
 # Tests
 
