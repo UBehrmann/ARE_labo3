@@ -22,6 +22,7 @@
     - [Liaison avec la Max10](#liaison-avec-la-max10)
       - [MSS pour la liaison Max10](#mss-pour-la-liaison-max10)
       - [1us](#1us)
+      - [Code C](#code-c)
 - [Tests](#tests)
   - [Simulation avec la console TCL-TK](#simulation-avec-la-console-tcl-tk)
 
@@ -42,8 +43,8 @@ Parce que chaque adresse Avalon correspond à 4 octets (32 bits), ainsi les 14 b
 | 0x01_0008 – 0x01_000B                                                  | switches (9..0), réservés (31..10)                  | réservés                          |
 | 0x01_000C – 0x01_000F                                                  | keys (3..0), réservés (31..4)                       | réservés                          |
 | 0x01_0010 – 0x01_0013                                                  | lp36_status (0), write_enable (1), réservés (31..2) | réservés                          |
-| 0x01_0014 – 0x01_0017                                                  | lp36_data (31..0)                                   | lp36_sel (3..0), réservés (31..4) |
-| 0x01_0018 – 0x01_001B                                                  | réservés                                            | lp36_data (31..0)                 |
+| 0x01_0014 – 0x01_0017                                                  | réservés                                            | lp36_sel (3..0), réservés (31..4) |
+| 0x01_0018 – 0x01_001B                                                  | lp36_data (31..0)                                   | lp36_data (31..0)                 |
 | 0x01_001C – 0x01_FFFF                                                  | réservés                                            | réservés                          |
 
 ## schéma  bloc  de  l’interface  Avalon
@@ -134,6 +135,7 @@ Dans le code C, on a choisi d'écrire toujours 0 pour les bits qui nous concerne
 
 Pour tester l'interface, on a utilisé la console TCL-TK pour simuler les entrées du CPU. On a crée une série de commandes dans la console pour simuler les lectures et écritures sur l'interface. 
 
-
+20 sel
+24 data
 
 </div>

@@ -70,18 +70,6 @@ ARCHITECTURE rtl OF avl_user_interface IS
   END COMPONENT;
   FOR ALL : timer USE ENTITY work.timer;
 
-  COMPONENT interface_con_80p_max10_prot_0x20 IS
-    PORT (
-      lp36_we_i : IN STD_LOGIC;
-      lp36_sel_i : IN STD_LOGIC_VECTOR(3 DOWNTO 0);
-      lp36_data_i : IN STD_LOGIC_VECTOR(31 DOWNTO 0);
-      lp36_status_o : OUT STD_LOGIC_VECTOR(1 DOWNTO 0);
-      GPIO_0_io : INOUT STD_LOGIC_VECTOR(35 DOWNTO 0);
-      GPIO_1_io : INOUT STD_LOGIC_VECTOR(35 DOWNTO 0)
-    );
-  END COMPONENT;
-  FOR ALL : interface_con_80p_max10_prot_0x20 USE ENTITY work.interface_con_80p_max10_prot_0x20(rtl);
-
   --| Constants declarations |--------------------------------------------------------------
   CONSTANT INTERFACE_ID_C : STD_LOGIC_VECTOR(31 DOWNTO 0) := x"12345678";
   CONSTANT OTHERS_VAL_C : STD_LOGIC_VECTOR(31 DOWNTO 0) := x"00000000";
@@ -93,8 +81,6 @@ ARCHITECTURE rtl OF avl_user_interface IS
 
   SIGNAL boutton_s : STD_LOGIC_VECTOR(3 DOWNTO 0);
   SIGNAL switches_s : STD_LOGIC_VECTOR(9 DOWNTO 0);
-
-  SIGNAL lp36_status_s : STD_LOGIC_VECTOR(1 DOWNTO 0);
   
   signal readdatavalid_next_s : std_logic;
   signal readdatavalid_reg_s : std_logic;
@@ -125,10 +111,8 @@ BEGIN
   boutton_s <= boutton_i;
   switches_s <= switch_i;
 
-  lp36_status_s <= lp36_status_i;
-
   cs_wr_lp36_data_s <= '1' when (avl_write_i = '1') AND (to_integer(unsigned(avl_address_i)) = 6) else '0';
-
+    
   lp36_valide_s <= '1' when lp36_status_i = "01" else '0';
 
   -- Output signals
@@ -140,6 +124,7 @@ BEGIN
 
   lp36_sel_o <= lp36_sel_reg_s;
   lp36_data_o <= lp36_data_reg_s;
+  lp36_we_o <= lp36_we_s;
 
   -- Read access part
   -- Read register process
@@ -166,7 +151,10 @@ BEGIN
         WHEN 4 =>
           readdata_next_s(0) <= lp36_valide_s;
           readdata_next_s(1) <= lp36_we_s;
-
+			 
+		  WHEN 6 =>
+          readdata_next_s <= lp36_data_reg_s;
+				  
         WHEN OTHERS =>
           readdata_next_s <= OTHERS_VAL_C;
 
@@ -199,9 +187,11 @@ BEGIN
 	 avl_writedata_i,
     led_reg_s,
     lp36_data_reg_s,
-    lp36_sel_reg_s
+    lp36_sel_reg_s,
+	 cs_wr_lp36_data_s
     )
   BEGIN
+	 
     IF avl_reset_i = '1' THEN
 
       led_reg_s <= (OTHERS => '0');
@@ -238,15 +228,7 @@ BEGIN
   END PROCESS;
 
   -- Interface management
-
-  interface_con_80p_max10_prot_0x20_inst : interface_con_80p_max10_prot_0x20
-  PORT MAP(
-    lp36_we_i => lp36_we_s,
-    lp36_sel_i => lp36_sel_reg_s,
-    lp36_data_i => lp36_data_reg_s,
-    lp36_status_o => lp36_status_s
-  );
-
+  
   -- Timer management
 
   timer_boutton : timer
@@ -270,6 +252,7 @@ BEGIN
   END PROCESS fsm_reg;
 
   dec_fut_sort : PROCESS (
+    e_pres,
     cs_wr_lp36_data_s,
     lp36_valide_s,
     us_done_s,
