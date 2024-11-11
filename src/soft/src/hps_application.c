@@ -24,6 +24,7 @@
  * 3      8.11.2024   GoninG       Updated the way we use lp36_wr and read lp36_status (not tested)
  * 4      8.11.2024   GoninG       Removed some bugs after test
  * 5      9.11.2024   GoninG       Code refactored with macro
+ * 6      11.11.2024  GoninG       Debuging and testing, Bugs fixed
  *
 *****************************************************************************************/
 #include <stdint.h>
@@ -68,13 +69,13 @@ int __auto_semihosting;
 #define LP36_DATA_SQUA_MASK            0x1FFFFFF //25 bits
 
 //READ/WRITE Macros
-#define READ_CONST_AXI_LW()            (INTERFACE_REG(CONST_AXI_LW_OFF) & CONST_AXI_LW_MASK) //using mask isn't useful because our interface do it aswell but it stay a good habit
+#define READ_CONST_AXI_LW()            (AXI_LW_REG(CONST_AXI_LW_OFF) & CONST_AXI_LW_MASK) //using mask isn't useful because our interface do it aswell but it stay a good habit
 #define READ_CONST_INT()               (INTERFACE_REG(CONST_INT_OFF) & CONST_INT_MASK)
 #define READ_KEYS()                    (~(INTERFACE_REG(KEYS_OFF) & KEYS_MASK)) //inverse keys value because active low
 #define READ_SWITCHS()                 (INTERFACE_REG(SWITCHS_OFF) & SWITCHS_MASK)
 #define READ_LP36_STATUS()             (INTERFACE_REG(LP36_STATUS_OFF) & LP36_STATUS_MASK)
 #define READ_LP36_WR()                 ((INTERFACE_REG(LP36_WR_OFF) & LP36_WR_MASK) >> ((int)(LP36_WR_MASK/2))) // SHR to get the bit on bit 0
-#define READ_LP36_DATA(_MASK_)         (INTERFACE_REG(LP36_DATA_OFF) & _MASK_) // _MASK_ is the mask to apply, depends on lp36_sel
+#define READ_LP36_DATA()               (INTERFACE_REG(LP36_DATA_OFF) & 0xFFFFFFFF)
 #define WRITE_LEDS(_x_)                (INTERFACE_REG(LEDS_OFF) = ((_x_) & LEDS_MASK)) // _x_is an 32 bits value
 #define WRITE_LP36_SEL(_x_)            (INTERFACE_REG(LP36_SEL_OFF) = ((_x_) & LP36_SEL_MASK))
 #define WRITE_LP36_DATA(_x_, _MASK_)   (INTERFACE_REG(LP36_DATA_OFF) = ((_x_) & _MASK_)) // _MASK_ is the mask to apply, depends on lp36_sel
@@ -86,6 +87,7 @@ int __auto_semihosting;
 #define KEY2_MASK                      0x4
 #define KEY3_MASK                      0x8
 #define SQUARE_LINE_SIZE               5
+#define SQUARE_FIRST_LINE_MASK		   0x1F
 #define CANT_WRITE_SEL                 ((READ_LP36_WR() == 1) || (READ_LP36_STATUS() == 0)) //if lp36_wr == 1 or FPGA thrown an error we can't write
 
 void all_max10_leds_off(void) {
@@ -129,8 +131,8 @@ int main(void){
         5. Afficher la constante ID de votre interface sur le bus Avalon au format
             hexadécimal dans la console de ARM-DS. */
         
+    int val, buf, maskToUse, squareShiftedValue, lastKey4Val;
     //1.
-    int val, buf, maskToUse;
     val = READ_LP36_STATUS();
     if(val != VALID_CONFIG_STATUS) {
         printf("MAX10 Config status:%x\n", val);
@@ -150,6 +152,12 @@ int main(void){
     //5
     val = READ_CONST_INT();
     printf("Our interface Const32:%x\n", val);
+
+
+
+
+    squareShiftedValue = 0;
+    lastKey4Val = 0;
     
     while (1) {
         /*  Ensuite pendant l’exécution du programme, à tout instant les actions suivantes doivent
@@ -217,23 +225,27 @@ int main(void){
         val = READ_KEYS() & KEY1_0_MASK;
         buf = READ_SWITCHS() & SW7_0_MASK;
 
-
-
-        if(val == 0) WRITE_LP36_DATA((READ_LP36_DATA(maskToUse) & (~SW7_0_MASK)) | (buf & maskToUse), maskToUse); //to keep shifted values and change only the 8 relevant bits
-        else if (val == 1) WRITE_LP36_DATA(0b10101010101010101010101010101010, maskToUse);
+        if(val == 0) {
+            if(maskToUse == LP36_DATA_SQUA_MASK) WRITE_LP36_DATA((squareShiftedValue & (~SW7_0_MASK)) | (buf), maskToUse);
+            else WRITE_LP36_DATA(buf & maskToUse, maskToUse);
+        } else if (val == 1) WRITE_LP36_DATA(0b10101010101010101010101010101010, maskToUse);
         else if (val == 2) WRITE_LP36_DATA(0b01010101010101010101010101010101, maskToUse);
         else if (val == 3) WRITE_LP36_DATA(0b11111111111111111111111111111111, maskToUse);
 
         //4
         buf = READ_KEYS() & KEY2_MASK;
-        if((buf != 0) && (val == 0) && (maskToUse == LP36_DATA_SQUA_MASK)) { //if copy switch mode and square mode
-            WRITE_LP36_DATA(READ_LP36_DATA(maskToUse) << SQUARE_LINE_SIZE, maskToUse);
+        if((buf != 0) && (val == 0) && (maskToUse == LP36_DATA_SQUA_MASK) && lastKey4Val != KEY2_MASK) { //if copy switch mode and square mode
+        	squareShiftedValue = ((squareShiftedValue & (~SW7_0_MASK)) | READ_LP36_DATA()) << SQUARE_LINE_SIZE;
+            WRITE_LP36_DATA(squareShiftedValue, maskToUse);
         }
+        lastKey4Val = buf;
 
         //5
         val = READ_KEYS() & KEY3_MASK;
         if(val != 0) {
         	all_max10_leds_off();
+            squareShiftedValue = 0;
+            lastKey4Val = 0;
         }
     }
 
