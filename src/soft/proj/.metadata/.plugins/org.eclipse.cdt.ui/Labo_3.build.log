@@ -1,15 +1,6 @@
-22:44:49 **** Incremental Build of configuration Debug for project Labo_3 ****
+13:27:07 **** Incremental Build of configuration Debug for project Labo_3 ****
 make all 
-Building file: /home/reds/ARE/Labo_3/soft/src/hps_application.c
-Invoking: GCC C Compiler 6.2.0 [arm-altera-eabi]
-arm-altera-eabi-gcc -O0 -g -Wall -MMD -MP -MF"src/hps_application.d" -MT"src/hps_application.o" -c -o "src/hps_application.o" "/home/reds/ARE/Labo_3/soft/src/hps_application.c"
-Finished building: /home/reds/ARE/Labo_3/soft/src/hps_application.c
- 
-Building target: Labo_3.axf
-Invoking: GCC C Linker 6.2.0 [arm-altera-eabi]
-arm-altera-eabi-gcc -T "/opt/intelFPGA/18.1/University_Program/Monitor_Program/arm_tools/baremetal/arm-altera-eabi/lib/cycloneV-dk-oc-ram-hosted.ld" -Wa,-adhlns="Labo_3.axf.lst" -o "Labo_3.axf"  ./src/hps_application.o   
-Finished building target: Labo_3.axf
- 
+make: Nothing to be done for 'all'.
 
-22:44:49 Build Finished. 0 errors, 0 warnings. (took 252ms)
+13:27:08 Build Finished. 0 errors, 0 warnings. (took 236ms)
 

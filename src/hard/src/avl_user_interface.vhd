@@ -110,8 +110,6 @@ BEGIN
 
   boutton_s <= boutton_i;
   switches_s <= switch_i;
-
-  cs_wr_lp36_data_s <= '1' when (avl_write_i = '1') AND (to_integer(unsigned(avl_address_i)) = 6) else '0';
     
   lp36_valide_s <= '1' when lp36_status_i = "01" else '0';
 
@@ -199,6 +197,8 @@ BEGIN
       lp36_sel_reg_s <= (OTHERS => '0');
 
     ELSIF rising_edge(avl_clk_i) THEN
+	 
+	 cs_wr_lp36_data_s <= '0';
 
       IF avl_write_i = '1' THEN
 
@@ -217,6 +217,7 @@ BEGIN
             -- Write only if not in transfering mode
             IF lp36_we_s = '0' THEN
               lp36_data_reg_s <= avl_writedata_i;
+				  cs_wr_lp36_data_s <= '1';
             END IF;
 
           WHEN OTHERS =>

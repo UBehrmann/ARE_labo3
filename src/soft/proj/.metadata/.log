@@ -943,3 +943,382 @@ Caused by: java.nio.file.AccessDeniedException: /opt/devstudio/2020.1/sw/../lost
 	at java.base/java.nio.file.Files.walkFileTree(Files.java:2760)
 	at com.arm.ds.components.legacy.LegacyComponentManager.findInPath(LegacyComponentManager.java:131)
 	... 19 more
+!SESSION 2024-11-11 13:19:46.134 -----------------------------------------------
+eclipse.buildId=unknown
+java.version=11.0.5
+java.vendor=Oracle Corporation
+BootLoader constants: OS=linux, ARCH=x86_64, WS=gtk, NL=en_US
+Command-line arguments:  -os linux -ws gtk -arch x86_64
+
+!ENTRY com.arm.newsfeed 4 0 2024-11-11 13:22:10.350
+!MESSAGE Error when reading RSS feed "https://community.arm.com/view-browse-feed.jspa?containerType=700&userID=-1&browseSite=place-content&filterID=contentstatus[published]~objecttype~objecttype[blogpost]&browseViewID=placeContent&containerID=1060"
+!STACK 0
+java.io.IOException: Server returned HTTP response code: 503 for URL: https://community.arm.com/arm-community-blogs/b/tools-software-ides-blog/privaterss
+	at java.base/sun.net.www.protocol.http.HttpURLConnection.getInputStream0(HttpURLConnection.java:1919)
+	at java.base/sun.net.www.protocol.http.HttpURLConnection.getInputStream(HttpURLConnection.java:1515)
+	at java.base/sun.net.www.protocol.https.HttpsURLConnectionImpl.getInputStream(HttpsURLConnectionImpl.java:250)
+	at com.sun.syndication.io.XmlReader.<init>(XmlReader.java:174)
+	at com.sun.syndication.io.XmlReader.<init>(XmlReader.java:151)
+	at com.arm.newsfeed.rss.AggregatedFeed.fetch(AggregatedFeed.java:221)
+	at com.arm.newsfeed.rss.AggregatedFeed.access$3(AggregatedFeed.java:217)
+	at com.arm.newsfeed.rss.AggregatedFeed$3.run(AggregatedFeed.java:196)
+
+!ENTRY com.arm.debugger.ux 4 0 2024-11-11 13:25:13.354
+!MESSAGE /opt/devstudio/2020.1/sw/../lost+found
+!STACK 0
+com.arm.ds.components.ComponentManagerException: java.nio.file.AccessDeniedException: /opt/devstudio/2020.1/sw/../lost+found
+	at com.arm.ds.components.legacy.LegacyComponentManager.findInPath(LegacyComponentManager.java:137)
+	at com.arm.ds.components.legacy.LegacyComponentManager.find(LegacyComponentManager.java:123)
+	at com.arm.ds.components.legacy.LegacyComponentManager.findExecutable(LegacyComponentManager.java:100)
+	at com.arm.debug.control.target.AbstractTargetController.resolveExecutableWithComponentManager(AbstractTargetController.java:174)
+	at com.arm.debug.control.target.AbstractTargetController.resolveFile(AbstractTargetController.java:192)
+	at com.arm.debug.control.target.AbstractTargetController.runSetupScript(AbstractTargetController.java:235)
+	at com.arm.debug.control.target.AbstractTargetController.setupTarget(AbstractTargetController.java:74)
+	at com.arm.debug.control.ConnectionController.doPreDebugServiceInitialization(ConnectionController.java:695)
+	at com.arm.debug.control.ConnectionController.doInitialize(ConnectionController.java:611)
+	at com.arm.debug.control.ConnectionController.manageThreadModelAndInitialize(ConnectionController.java:591)
+	at com.arm.debug.control.ConnectionController.manageProgressResourceAndInitialize(ConnectionController.java:535)
+	at com.arm.debug.control.ConnectionController.initialize(ConnectionController.java:444)
+	at com.arm.debug.control.ConnectionManager.createConnection(ConnectionManager.java:284)
+	at com.arm.debug.launcher.TargetLauncher.launch(TargetLauncher.java:23)
+	at org.eclipse.debug.internal.core.LaunchConfiguration.launch(LaunchConfiguration.java:860)
+	at org.eclipse.debug.internal.core.LaunchConfiguration.launch(LaunchConfiguration.java:719)
+	at com.arm.debug.control.VariableResolvingLaunchConfiguration.launch(VariableResolvingLaunchConfiguration.java:274)
+	at org.eclipse.debug.internal.ui.DebugUIPlugin.buildAndLaunch(DebugUIPlugin.java:1017)
+	at org.eclipse.debug.internal.ui.DebugUIPlugin$2.run(DebugUIPlugin.java:1220)
+	at org.eclipse.core.internal.jobs.Worker.run(Worker.java:63)
+Caused by: java.nio.file.AccessDeniedException: /opt/devstudio/2020.1/sw/../lost+found
+	at java.base/sun.nio.fs.UnixException.translateToIOException(UnixException.java:90)
+	at java.base/sun.nio.fs.UnixException.rethrowAsIOException(UnixException.java:111)
+	at java.base/sun.nio.fs.UnixException.rethrowAsIOException(UnixException.java:116)
+	at java.base/sun.nio.fs.UnixFileSystemProvider.newDirectoryStream(UnixFileSystemProvider.java:432)
+	at java.base/java.nio.file.Files.newDirectoryStream(Files.java:471)
+	at java.base/java.nio.file.FileTreeWalker.visit(FileTreeWalker.java:300)
+	at java.base/java.nio.file.FileTreeWalker.next(FileTreeWalker.java:373)
+	at java.base/java.nio.file.Files.walkFileTree(Files.java:2760)
+	at com.arm.ds.components.legacy.LegacyComponentManager.findInPath(LegacyComponentManager.java:131)
+	... 19 more
+
+!ENTRY com.arm.debugger.ux 4 0 2024-11-11 13:26:05.182
+!MESSAGE /opt/devstudio/2020.1/sw/../lost+found
+!STACK 0
+com.arm.ds.components.ComponentManagerException: java.nio.file.AccessDeniedException: /opt/devstudio/2020.1/sw/../lost+found
+	at com.arm.ds.components.legacy.LegacyComponentManager.findInPath(LegacyComponentManager.java:137)
+	at com.arm.ds.components.legacy.LegacyComponentManager.find(LegacyComponentManager.java:123)
+	at com.arm.ds.components.legacy.LegacyComponentManager.findExecutable(LegacyComponentManager.java:100)
+	at com.arm.debug.control.target.AbstractTargetController.resolveExecutableWithComponentManager(AbstractTargetController.java:174)
+	at com.arm.debug.control.target.AbstractTargetController.resolveFile(AbstractTargetController.java:192)
+	at com.arm.debug.control.target.AbstractTargetController.runSetupScript(AbstractTargetController.java:235)
+	at com.arm.debug.control.target.AbstractTargetController.setupTarget(AbstractTargetController.java:74)
+	at com.arm.debug.control.ConnectionController.doPreDebugServiceInitialization(ConnectionController.java:695)
+	at com.arm.debug.control.ConnectionController.doInitialize(ConnectionController.java:611)
+	at com.arm.debug.control.ConnectionController.manageThreadModelAndInitialize(ConnectionController.java:591)
+	at com.arm.debug.control.ConnectionController.manageProgressResourceAndInitialize(ConnectionController.java:535)
+	at com.arm.debug.control.ConnectionController.initialize(ConnectionController.java:444)
+	at com.arm.debug.control.ConnectionManager.createConnection(ConnectionManager.java:284)
+	at com.arm.debug.launcher.TargetLauncher.launch(TargetLauncher.java:23)
+	at org.eclipse.debug.internal.core.LaunchConfiguration.launch(LaunchConfiguration.java:860)
+	at org.eclipse.debug.internal.core.LaunchConfiguration.launch(LaunchConfiguration.java:719)
+	at com.arm.debug.control.VariableResolvingLaunchConfiguration.launch(VariableResolvingLaunchConfiguration.java:274)
+	at org.eclipse.debug.internal.ui.DebugUIPlugin.buildAndLaunch(DebugUIPlugin.java:1017)
+	at org.eclipse.debug.internal.ui.DebugUIPlugin$2.run(DebugUIPlugin.java:1220)
+	at org.eclipse.core.internal.jobs.Worker.run(Worker.java:63)
+Caused by: java.nio.file.AccessDeniedException: /opt/devstudio/2020.1/sw/../lost+found
+	at java.base/sun.nio.fs.UnixException.translateToIOException(UnixException.java:90)
+	at java.base/sun.nio.fs.UnixException.rethrowAsIOException(UnixException.java:111)
+	at java.base/sun.nio.fs.UnixException.rethrowAsIOException(UnixException.java:116)
+	at java.base/sun.nio.fs.UnixFileSystemProvider.newDirectoryStream(UnixFileSystemProvider.java:432)
+	at java.base/java.nio.file.Files.newDirectoryStream(Files.java:471)
+	at java.base/java.nio.file.FileTreeWalker.visit(FileTreeWalker.java:300)
+	at java.base/java.nio.file.FileTreeWalker.next(FileTreeWalker.java:373)
+	at java.base/java.nio.file.Files.walkFileTree(Files.java:2760)
+	at com.arm.ds.components.legacy.LegacyComponentManager.findInPath(LegacyComponentManager.java:131)
+	... 19 more
+
+!ENTRY com.arm.debugger.ux 4 0 2024-11-11 13:28:55.159
+!MESSAGE /opt/devstudio/2020.1/sw/../lost+found
+!STACK 0
+com.arm.ds.components.ComponentManagerException: java.nio.file.AccessDeniedException: /opt/devstudio/2020.1/sw/../lost+found
+	at com.arm.ds.components.legacy.LegacyComponentManager.findInPath(LegacyComponentManager.java:137)
+	at com.arm.ds.components.legacy.LegacyComponentManager.find(LegacyComponentManager.java:123)
+	at com.arm.ds.components.legacy.LegacyComponentManager.findExecutable(LegacyComponentManager.java:100)
+	at com.arm.debug.control.target.AbstractTargetController.resolveExecutableWithComponentManager(AbstractTargetController.java:174)
+	at com.arm.debug.control.target.AbstractTargetController.resolveFile(AbstractTargetController.java:192)
+	at com.arm.debug.control.target.AbstractTargetController.runSetupScript(AbstractTargetController.java:235)
+	at com.arm.debug.control.target.AbstractTargetController.setupTarget(AbstractTargetController.java:74)
+	at com.arm.debug.control.ConnectionController.doPreDebugServiceInitialization(ConnectionController.java:695)
+	at com.arm.debug.control.ConnectionController.doInitialize(ConnectionController.java:611)
+	at com.arm.debug.control.ConnectionController.manageThreadModelAndInitialize(ConnectionController.java:591)
+	at com.arm.debug.control.ConnectionController.manageProgressResourceAndInitialize(ConnectionController.java:535)
+	at com.arm.debug.control.ConnectionController.initialize(ConnectionController.java:444)
+	at com.arm.debug.control.ConnectionManager.createConnection(ConnectionManager.java:284)
+	at com.arm.debug.launcher.TargetLauncher.launch(TargetLauncher.java:23)
+	at org.eclipse.debug.internal.core.LaunchConfiguration.launch(LaunchConfiguration.java:860)
+	at org.eclipse.debug.internal.core.LaunchConfiguration.launch(LaunchConfiguration.java:719)
+	at com.arm.debug.control.VariableResolvingLaunchConfiguration.launch(VariableResolvingLaunchConfiguration.java:274)
+	at org.eclipse.debug.internal.ui.DebugUIPlugin.buildAndLaunch(DebugUIPlugin.java:1017)
+	at org.eclipse.debug.internal.ui.DebugUIPlugin$2.run(DebugUIPlugin.java:1220)
+	at org.eclipse.core.internal.jobs.Worker.run(Worker.java:63)
+Caused by: java.nio.file.AccessDeniedException: /opt/devstudio/2020.1/sw/../lost+found
+	at java.base/sun.nio.fs.UnixException.translateToIOException(UnixException.java:90)
+	at java.base/sun.nio.fs.UnixException.rethrowAsIOException(UnixException.java:111)
+	at java.base/sun.nio.fs.UnixException.rethrowAsIOException(UnixException.java:116)
+	at java.base/sun.nio.fs.UnixFileSystemProvider.newDirectoryStream(UnixFileSystemProvider.java:432)
+	at java.base/java.nio.file.Files.newDirectoryStream(Files.java:471)
+	at java.base/java.nio.file.FileTreeWalker.visit(FileTreeWalker.java:300)
+	at java.base/java.nio.file.FileTreeWalker.next(FileTreeWalker.java:373)
+	at java.base/java.nio.file.Files.walkFileTree(Files.java:2760)
+	at com.arm.ds.components.legacy.LegacyComponentManager.findInPath(LegacyComponentManager.java:131)
+	... 19 more
+
+!ENTRY com.arm.debugger.ux 4 0 2024-11-11 13:29:29.544
+!MESSAGE Unable to connect to debug. The target hardware identity could not be verified. Please check that the target being connected to is of type Cyclone V SoC (Dual Core) 
+!STACK 0
+com.arm.debug.core.interfaces.engine.DebugException: The target hardware identity could not be verified. Please check that the target being connected to is of type Cyclone V SoC (Dual Core) 
+	at com.arm.debug.targetaccess.device.DTSLConnection.connect(DTSLConnection.java:78)
+	at com.arm.debug.service.DebugService$1.run(DebugService.java:402)
+	at com.arm.debug.service.DebugService$1.run(DebugService.java:1)
+	at com.arm.debug.service.proxy.SingleThreader$QueuedCall.run(SingleThreader.java:53)
+	at com.arm.debug.service.proxy.SingleThreader$1.run(SingleThreader.java:116)
+Asynchronously called from thread pool-22-thread-1
+	at com.arm.debug.service.proxy.SingleThreader.execute(SingleThreader.java:148)
+	at com.arm.debug.service.DebugService.createDebugService(DebugService.java:385)
+	at com.arm.debug.control.ConnectionController.lambda$1(ConnectionController.java:1032)
+	at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:264)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1128)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:628)
+	at java.base/java.lang.Thread.run(Thread.java:834)
+
+!ENTRY com.arm.debugger.ux 4 0 2024-11-11 13:29:33.524
+!MESSAGE /opt/devstudio/2020.1/sw/../lost+found
+!STACK 0
+com.arm.ds.components.ComponentManagerException: java.nio.file.AccessDeniedException: /opt/devstudio/2020.1/sw/../lost+found
+	at com.arm.ds.components.legacy.LegacyComponentManager.findInPath(LegacyComponentManager.java:137)
+	at com.arm.ds.components.legacy.LegacyComponentManager.find(LegacyComponentManager.java:123)
+	at com.arm.ds.components.legacy.LegacyComponentManager.findExecutable(LegacyComponentManager.java:100)
+	at com.arm.debug.control.target.AbstractTargetController.resolveExecutableWithComponentManager(AbstractTargetController.java:174)
+	at com.arm.debug.control.target.AbstractTargetController.resolveFile(AbstractTargetController.java:192)
+	at com.arm.debug.control.target.AbstractTargetController.runSetupScript(AbstractTargetController.java:235)
+	at com.arm.debug.control.target.AbstractTargetController.setupTarget(AbstractTargetController.java:74)
+	at com.arm.debug.control.ConnectionController.doPreDebugServiceInitialization(ConnectionController.java:695)
+	at com.arm.debug.control.ConnectionController.doInitialize(ConnectionController.java:611)
+	at com.arm.debug.control.ConnectionController.manageThreadModelAndInitialize(ConnectionController.java:591)
+	at com.arm.debug.control.ConnectionController.manageProgressResourceAndInitialize(ConnectionController.java:535)
+	at com.arm.debug.control.ConnectionController.initialize(ConnectionController.java:444)
+	at com.arm.debug.control.ConnectionManager.createConnection(ConnectionManager.java:284)
+	at com.arm.debug.launcher.TargetLauncher.launch(TargetLauncher.java:23)
+	at org.eclipse.debug.internal.core.LaunchConfiguration.launch(LaunchConfiguration.java:860)
+	at org.eclipse.debug.internal.core.LaunchConfiguration.launch(LaunchConfiguration.java:719)
+	at com.arm.debug.control.VariableResolvingLaunchConfiguration.launch(VariableResolvingLaunchConfiguration.java:274)
+	at org.eclipse.debug.internal.ui.DebugUIPlugin.buildAndLaunch(DebugUIPlugin.java:1017)
+	at org.eclipse.debug.internal.ui.DebugUIPlugin$2.run(DebugUIPlugin.java:1220)
+	at org.eclipse.core.internal.jobs.Worker.run(Worker.java:63)
+Caused by: java.nio.file.AccessDeniedException: /opt/devstudio/2020.1/sw/../lost+found
+	at java.base/sun.nio.fs.UnixException.translateToIOException(UnixException.java:90)
+	at java.base/sun.nio.fs.UnixException.rethrowAsIOException(UnixException.java:111)
+	at java.base/sun.nio.fs.UnixException.rethrowAsIOException(UnixException.java:116)
+	at java.base/sun.nio.fs.UnixFileSystemProvider.newDirectoryStream(UnixFileSystemProvider.java:432)
+	at java.base/java.nio.file.Files.newDirectoryStream(Files.java:471)
+	at java.base/java.nio.file.FileTreeWalker.visit(FileTreeWalker.java:300)
+	at java.base/java.nio.file.FileTreeWalker.next(FileTreeWalker.java:373)
+	at java.base/java.nio.file.Files.walkFileTree(Files.java:2760)
+	at com.arm.ds.components.legacy.LegacyComponentManager.findInPath(LegacyComponentManager.java:131)
+	... 19 more
+
+!ENTRY com.arm.debugger.ux 4 0 2024-11-11 13:30:06.981
+!MESSAGE /opt/devstudio/2020.1/sw/../lost+found
+!STACK 0
+com.arm.ds.components.ComponentManagerException: java.nio.file.AccessDeniedException: /opt/devstudio/2020.1/sw/../lost+found
+	at com.arm.ds.components.legacy.LegacyComponentManager.findInPath(LegacyComponentManager.java:137)
+	at com.arm.ds.components.legacy.LegacyComponentManager.find(LegacyComponentManager.java:123)
+	at com.arm.ds.components.legacy.LegacyComponentManager.findExecutable(LegacyComponentManager.java:100)
+	at com.arm.debug.control.target.AbstractTargetController.resolveExecutableWithComponentManager(AbstractTargetController.java:174)
+	at com.arm.debug.control.target.AbstractTargetController.resolveFile(AbstractTargetController.java:192)
+	at com.arm.debug.control.target.AbstractTargetController.runSetupScript(AbstractTargetController.java:235)
+	at com.arm.debug.control.target.AbstractTargetController.setupTarget(AbstractTargetController.java:74)
+	at com.arm.debug.control.ConnectionController.doPreDebugServiceInitialization(ConnectionController.java:695)
+	at com.arm.debug.control.ConnectionController.doInitialize(ConnectionController.java:611)
+	at com.arm.debug.control.ConnectionController.manageThreadModelAndInitialize(ConnectionController.java:591)
+	at com.arm.debug.control.ConnectionController.manageProgressResourceAndInitialize(ConnectionController.java:535)
+	at com.arm.debug.control.ConnectionController.initialize(ConnectionController.java:444)
+	at com.arm.debug.control.ConnectionManager.createConnection(ConnectionManager.java:284)
+	at com.arm.debug.launcher.TargetLauncher.launch(TargetLauncher.java:23)
+	at org.eclipse.debug.internal.core.LaunchConfiguration.launch(LaunchConfiguration.java:860)
+	at org.eclipse.debug.internal.core.LaunchConfiguration.launch(LaunchConfiguration.java:719)
+	at com.arm.debug.control.VariableResolvingLaunchConfiguration.launch(VariableResolvingLaunchConfiguration.java:274)
+	at org.eclipse.debug.internal.ui.DebugUIPlugin.buildAndLaunch(DebugUIPlugin.java:1017)
+	at org.eclipse.debug.internal.ui.DebugUIPlugin$2.run(DebugUIPlugin.java:1220)
+	at org.eclipse.core.internal.jobs.Worker.run(Worker.java:63)
+Caused by: java.nio.file.AccessDeniedException: /opt/devstudio/2020.1/sw/../lost+found
+	at java.base/sun.nio.fs.UnixException.translateToIOException(UnixException.java:90)
+	at java.base/sun.nio.fs.UnixException.rethrowAsIOException(UnixException.java:111)
+	at java.base/sun.nio.fs.UnixException.rethrowAsIOException(UnixException.java:116)
+	at java.base/sun.nio.fs.UnixFileSystemProvider.newDirectoryStream(UnixFileSystemProvider.java:432)
+	at java.base/java.nio.file.Files.newDirectoryStream(Files.java:471)
+	at java.base/java.nio.file.FileTreeWalker.visit(FileTreeWalker.java:300)
+	at java.base/java.nio.file.FileTreeWalker.next(FileTreeWalker.java:373)
+	at java.base/java.nio.file.Files.walkFileTree(Files.java:2760)
+	at com.arm.ds.components.legacy.LegacyComponentManager.findInPath(LegacyComponentManager.java:131)
+	... 19 more
+
+!ENTRY com.arm.debugger.ux 4 0 2024-11-11 13:31:03.510
+!MESSAGE /opt/devstudio/2020.1/sw/../lost+found
+!STACK 0
+com.arm.ds.components.ComponentManagerException: java.nio.file.AccessDeniedException: /opt/devstudio/2020.1/sw/../lost+found
+	at com.arm.ds.components.legacy.LegacyComponentManager.findInPath(LegacyComponentManager.java:137)
+	at com.arm.ds.components.legacy.LegacyComponentManager.find(LegacyComponentManager.java:123)
+	at com.arm.ds.components.legacy.LegacyComponentManager.findExecutable(LegacyComponentManager.java:100)
+	at com.arm.debug.control.target.AbstractTargetController.resolveExecutableWithComponentManager(AbstractTargetController.java:174)
+	at com.arm.debug.control.target.AbstractTargetController.resolveFile(AbstractTargetController.java:192)
+	at com.arm.debug.control.target.AbstractTargetController.runSetupScript(AbstractTargetController.java:235)
+	at com.arm.debug.control.target.AbstractTargetController.setupTarget(AbstractTargetController.java:74)
+	at com.arm.debug.control.ConnectionController.doPreDebugServiceInitialization(ConnectionController.java:695)
+	at com.arm.debug.control.ConnectionController.doInitialize(ConnectionController.java:611)
+	at com.arm.debug.control.ConnectionController.manageThreadModelAndInitialize(ConnectionController.java:591)
+	at com.arm.debug.control.ConnectionController.manageProgressResourceAndInitialize(ConnectionController.java:535)
+	at com.arm.debug.control.ConnectionController.initialize(ConnectionController.java:444)
+	at com.arm.debug.control.ConnectionManager.createConnection(ConnectionManager.java:284)
+	at com.arm.debug.launcher.TargetLauncher.launch(TargetLauncher.java:23)
+	at org.eclipse.debug.internal.core.LaunchConfiguration.launch(LaunchConfiguration.java:860)
+	at org.eclipse.debug.internal.core.LaunchConfiguration.launch(LaunchConfiguration.java:719)
+	at com.arm.debug.control.VariableResolvingLaunchConfiguration.launch(VariableResolvingLaunchConfiguration.java:274)
+	at org.eclipse.debug.internal.ui.DebugUIPlugin.buildAndLaunch(DebugUIPlugin.java:1017)
+	at org.eclipse.debug.internal.ui.DebugUIPlugin$2.run(DebugUIPlugin.java:1220)
+	at org.eclipse.core.internal.jobs.Worker.run(Worker.java:63)
+Caused by: java.nio.file.AccessDeniedException: /opt/devstudio/2020.1/sw/../lost+found
+	at java.base/sun.nio.fs.UnixException.translateToIOException(UnixException.java:90)
+	at java.base/sun.nio.fs.UnixException.rethrowAsIOException(UnixException.java:111)
+	at java.base/sun.nio.fs.UnixException.rethrowAsIOException(UnixException.java:116)
+	at java.base/sun.nio.fs.UnixFileSystemProvider.newDirectoryStream(UnixFileSystemProvider.java:432)
+	at java.base/java.nio.file.Files.newDirectoryStream(Files.java:471)
+	at java.base/java.nio.file.FileTreeWalker.visit(FileTreeWalker.java:300)
+	at java.base/java.nio.file.FileTreeWalker.next(FileTreeWalker.java:373)
+	at java.base/java.nio.file.Files.walkFileTree(Files.java:2760)
+	at com.arm.ds.components.legacy.LegacyComponentManager.findInPath(LegacyComponentManager.java:131)
+	... 19 more
+
+!ENTRY com.arm.debugger.ux 4 0 2024-11-11 13:32:02.847
+!MESSAGE /opt/devstudio/2020.1/sw/../lost+found
+!STACK 0
+com.arm.ds.components.ComponentManagerException: java.nio.file.AccessDeniedException: /opt/devstudio/2020.1/sw/../lost+found
+	at com.arm.ds.components.legacy.LegacyComponentManager.findInPath(LegacyComponentManager.java:137)
+	at com.arm.ds.components.legacy.LegacyComponentManager.find(LegacyComponentManager.java:123)
+	at com.arm.ds.components.legacy.LegacyComponentManager.findExecutable(LegacyComponentManager.java:100)
+	at com.arm.debug.control.target.AbstractTargetController.resolveExecutableWithComponentManager(AbstractTargetController.java:174)
+	at com.arm.debug.control.target.AbstractTargetController.resolveFile(AbstractTargetController.java:192)
+	at com.arm.debug.control.target.AbstractTargetController.runSetupScript(AbstractTargetController.java:235)
+	at com.arm.debug.control.target.AbstractTargetController.setupTarget(AbstractTargetController.java:74)
+	at com.arm.debug.control.ConnectionController.doPreDebugServiceInitialization(ConnectionController.java:695)
+	at com.arm.debug.control.ConnectionController.doInitialize(ConnectionController.java:611)
+	at com.arm.debug.control.ConnectionController.manageThreadModelAndInitialize(ConnectionController.java:591)
+	at com.arm.debug.control.ConnectionController.manageProgressResourceAndInitialize(ConnectionController.java:535)
+	at com.arm.debug.control.ConnectionController.initialize(ConnectionController.java:444)
+	at com.arm.debug.control.ConnectionManager.createConnection(ConnectionManager.java:284)
+	at com.arm.debug.launcher.TargetLauncher.launch(TargetLauncher.java:23)
+	at org.eclipse.debug.internal.core.LaunchConfiguration.launch(LaunchConfiguration.java:860)
+	at org.eclipse.debug.internal.core.LaunchConfiguration.launch(LaunchConfiguration.java:719)
+	at com.arm.debug.control.VariableResolvingLaunchConfiguration.launch(VariableResolvingLaunchConfiguration.java:274)
+	at org.eclipse.debug.internal.ui.DebugUIPlugin.buildAndLaunch(DebugUIPlugin.java:1017)
+	at org.eclipse.debug.internal.ui.DebugUIPlugin$2.run(DebugUIPlugin.java:1220)
+	at org.eclipse.core.internal.jobs.Worker.run(Worker.java:63)
+Caused by: java.nio.file.AccessDeniedException: /opt/devstudio/2020.1/sw/../lost+found
+	at java.base/sun.nio.fs.UnixException.translateToIOException(UnixException.java:90)
+	at java.base/sun.nio.fs.UnixException.rethrowAsIOException(UnixException.java:111)
+	at java.base/sun.nio.fs.UnixException.rethrowAsIOException(UnixException.java:116)
+	at java.base/sun.nio.fs.UnixFileSystemProvider.newDirectoryStream(UnixFileSystemProvider.java:432)
+	at java.base/java.nio.file.Files.newDirectoryStream(Files.java:471)
+	at java.base/java.nio.file.FileTreeWalker.visit(FileTreeWalker.java:300)
+	at java.base/java.nio.file.FileTreeWalker.next(FileTreeWalker.java:373)
+	at java.base/java.nio.file.Files.walkFileTree(Files.java:2760)
+	at com.arm.ds.components.legacy.LegacyComponentManager.findInPath(LegacyComponentManager.java:131)
+	... 19 more
+
+!ENTRY com.arm.debugger.ux 4 0 2024-11-11 13:32:37.225
+!MESSAGE Unable to connect to debug. The target hardware identity could not be verified. Please check that the target being connected to is of type Cyclone V SoC (Dual Core) 
+!STACK 0
+com.arm.debug.core.interfaces.engine.DebugException: The target hardware identity could not be verified. Please check that the target being connected to is of type Cyclone V SoC (Dual Core) 
+	at com.arm.debug.targetaccess.device.DTSLConnection.connect(DTSLConnection.java:78)
+	at com.arm.debug.service.DebugService$1.run(DebugService.java:402)
+	at com.arm.debug.service.DebugService$1.run(DebugService.java:1)
+	at com.arm.debug.service.proxy.SingleThreader$QueuedCall.run(SingleThreader.java:53)
+	at com.arm.debug.service.proxy.SingleThreader$1.run(SingleThreader.java:116)
+Asynchronously called from thread pool-42-thread-1
+	at com.arm.debug.service.proxy.SingleThreader.execute(SingleThreader.java:148)
+	at com.arm.debug.service.DebugService.createDebugService(DebugService.java:385)
+	at com.arm.debug.control.ConnectionController.lambda$1(ConnectionController.java:1032)
+	at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:264)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1128)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:628)
+	at java.base/java.lang.Thread.run(Thread.java:834)
+
+!ENTRY com.arm.debugger.ux 4 0 2024-11-11 13:32:40.199
+!MESSAGE /opt/devstudio/2020.1/sw/../lost+found
+!STACK 0
+com.arm.ds.components.ComponentManagerException: java.nio.file.AccessDeniedException: /opt/devstudio/2020.1/sw/../lost+found
+	at com.arm.ds.components.legacy.LegacyComponentManager.findInPath(LegacyComponentManager.java:137)
+	at com.arm.ds.components.legacy.LegacyComponentManager.find(LegacyComponentManager.java:123)
+	at com.arm.ds.components.legacy.LegacyComponentManager.findExecutable(LegacyComponentManager.java:100)
+	at com.arm.debug.control.target.AbstractTargetController.resolveExecutableWithComponentManager(AbstractTargetController.java:174)
+	at com.arm.debug.control.target.AbstractTargetController.resolveFile(AbstractTargetController.java:192)
+	at com.arm.debug.control.target.AbstractTargetController.runSetupScript(AbstractTargetController.java:235)
+	at com.arm.debug.control.target.AbstractTargetController.setupTarget(AbstractTargetController.java:74)
+	at com.arm.debug.control.ConnectionController.doPreDebugServiceInitialization(ConnectionController.java:695)
+	at com.arm.debug.control.ConnectionController.doInitialize(ConnectionController.java:611)
+	at com.arm.debug.control.ConnectionController.manageThreadModelAndInitialize(ConnectionController.java:591)
+	at com.arm.debug.control.ConnectionController.manageProgressResourceAndInitialize(ConnectionController.java:535)
+	at com.arm.debug.control.ConnectionController.initialize(ConnectionController.java:444)
+	at com.arm.debug.control.ConnectionManager.createConnection(ConnectionManager.java:284)
+	at com.arm.debug.launcher.TargetLauncher.launch(TargetLauncher.java:23)
+	at org.eclipse.debug.internal.core.LaunchConfiguration.launch(LaunchConfiguration.java:860)
+	at org.eclipse.debug.internal.core.LaunchConfiguration.launch(LaunchConfiguration.java:719)
+	at com.arm.debug.control.VariableResolvingLaunchConfiguration.launch(VariableResolvingLaunchConfiguration.java:274)
+	at org.eclipse.debug.internal.ui.DebugUIPlugin.buildAndLaunch(DebugUIPlugin.java:1017)
+	at org.eclipse.debug.internal.ui.DebugUIPlugin$2.run(DebugUIPlugin.java:1220)
+	at org.eclipse.core.internal.jobs.Worker.run(Worker.java:63)
+Caused by: java.nio.file.AccessDeniedException: /opt/devstudio/2020.1/sw/../lost+found
+	at java.base/sun.nio.fs.UnixException.translateToIOException(UnixException.java:90)
+	at java.base/sun.nio.fs.UnixException.rethrowAsIOException(UnixException.java:111)
+	at java.base/sun.nio.fs.UnixException.rethrowAsIOException(UnixException.java:116)
+	at java.base/sun.nio.fs.UnixFileSystemProvider.newDirectoryStream(UnixFileSystemProvider.java:432)
+	at java.base/java.nio.file.Files.newDirectoryStream(Files.java:471)
+	at java.base/java.nio.file.FileTreeWalker.visit(FileTreeWalker.java:300)
+	at java.base/java.nio.file.FileTreeWalker.next(FileTreeWalker.java:373)
+	at java.base/java.nio.file.Files.walkFileTree(Files.java:2760)
+	at com.arm.ds.components.legacy.LegacyComponentManager.findInPath(LegacyComponentManager.java:131)
+	... 19 more
+
+!ENTRY com.arm.debugger.ux 4 0 2024-11-11 13:42:10.288
+!MESSAGE /opt/devstudio/2020.1/sw/../lost+found
+!STACK 0
+com.arm.ds.components.ComponentManagerException: java.nio.file.AccessDeniedException: /opt/devstudio/2020.1/sw/../lost+found
+	at com.arm.ds.components.legacy.LegacyComponentManager.findInPath(LegacyComponentManager.java:137)
+	at com.arm.ds.components.legacy.LegacyComponentManager.find(LegacyComponentManager.java:123)
+	at com.arm.ds.components.legacy.LegacyComponentManager.findExecutable(LegacyComponentManager.java:100)
+	at com.arm.debug.control.target.AbstractTargetController.resolveExecutableWithComponentManager(AbstractTargetController.java:174)
+	at com.arm.debug.control.target.AbstractTargetController.resolveFile(AbstractTargetController.java:192)
+	at com.arm.debug.control.target.AbstractTargetController.runSetupScript(AbstractTargetController.java:235)
+	at com.arm.debug.control.target.AbstractTargetController.setupTarget(AbstractTargetController.java:74)
+	at com.arm.debug.control.ConnectionController.doPreDebugServiceInitialization(ConnectionController.java:695)
+	at com.arm.debug.control.ConnectionController.doInitialize(ConnectionController.java:611)
+	at com.arm.debug.control.ConnectionController.manageThreadModelAndInitialize(ConnectionController.java:591)
+	at com.arm.debug.control.ConnectionController.manageProgressResourceAndInitialize(ConnectionController.java:535)
+	at com.arm.debug.control.ConnectionController.initialize(ConnectionController.java:444)
+	at com.arm.debug.control.ConnectionManager.createConnection(ConnectionManager.java:284)
+	at com.arm.debug.launcher.TargetLauncher.launch(TargetLauncher.java:23)
+	at org.eclipse.debug.internal.core.LaunchConfiguration.launch(LaunchConfiguration.java:860)
+	at org.eclipse.debug.internal.core.LaunchConfiguration.launch(LaunchConfiguration.java:719)
+	at com.arm.debug.control.VariableResolvingLaunchConfiguration.launch(VariableResolvingLaunchConfiguration.java:274)
+	at org.eclipse.debug.internal.ui.DebugUIPlugin.buildAndLaunch(DebugUIPlugin.java:1017)
+	at org.eclipse.debug.internal.ui.DebugUIPlugin$2.run(DebugUIPlugin.java:1220)
+	at org.eclipse.core.internal.jobs.Worker.run(Worker.java:63)
+Caused by: java.nio.file.AccessDeniedException: /opt/devstudio/2020.1/sw/../lost+found
+	at java.base/sun.nio.fs.UnixException.translateToIOException(UnixException.java:90)
+	at java.base/sun.nio.fs.UnixException.rethrowAsIOException(UnixException.java:111)
+	at java.base/sun.nio.fs.UnixException.rethrowAsIOException(UnixException.java:116)
+	at java.base/sun.nio.fs.UnixFileSystemProvider.newDirectoryStream(UnixFileSystemProvider.java:432)
+	at java.base/java.nio.file.Files.newDirectoryStream(Files.java:471)
+	at java.base/java.nio.file.FileTreeWalker.visit(FileTreeWalker.java:300)
+	at java.base/java.nio.file.FileTreeWalker.next(FileTreeWalker.java:373)
+	at java.base/java.nio.file.Files.walkFileTree(Files.java:2760)
+	at com.arm.ds.components.legacy.LegacyComponentManager.findInPath(LegacyComponentManager.java:131)
+	... 19 more
