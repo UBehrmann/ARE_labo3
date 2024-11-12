@@ -89,6 +89,7 @@ int __auto_semihosting;
 #define KEY3_MASK                      0x8
 #define SQUARE_LINE_SIZE               5
 #define SQUARE_FIRST_LINE_MASK		   0x1F
+#define SQUARE_SECOND_LINE_MASK		   0xE0
 #define CANT_WRITE_SEL                 ((READ_LP36_WR() == 1) || (READ_LP36_STATUS() == 0)) //if lp36_wr == 1 or FPGA thrown an error we can't write
 
 void all_max10_leds_off(void) {
@@ -222,13 +223,26 @@ int main(void){
         	WRITE_LP36_SEL(buf);
         } while(CANT_WRITE_SEL);
 
+        val = READ_KEYS() & KEY3_MASK;
+        if(val != 0) {
+        	all_max10_leds_off();
+        	squareShiftedValue = 0;
+        	lastKey4Val = 0;
+        	continue;
+        }
+
 
         //3
         val = READ_KEYS() & KEY1_0_MASK;
         buf = READ_SWITCHS() & SW7_0_MASK;
 
         if(val == 0) {
-            if(maskToUse == LP36_DATA_SQUA_MASK) WRITE_LP36_DATA(squareShiftedValue | ((buf & SQUARE_FIRST_LINE_MASK) << (SQUARE_LINE_SIZE*offset)), maskToUse);
+            if(maskToUse == LP36_DATA_SQUA_MASK)
+            {
+            	squareShiftedValue =  (READ_SWITCHS() & SQUARE_FIRST_LINE_MASK) << (SQUARE_LINE_SIZE*(offset)); //reset bits where SW4-SW0 will be written
+            	squareShiftedValue |= ((READ_SWITCHS() & SQUARE_SECOND_LINE_MASK) >> 5) << (SQUARE_LINE_SIZE*((offset+1)%SQUARE_LINE_SIZE));
+            	WRITE_LP36_DATA(squareShiftedValue | ((buf & SQUARE_FIRST_LINE_MASK) << (SQUARE_LINE_SIZE*offset)), maskToUse);
+            }
             else WRITE_LP36_DATA(buf & maskToUse, maskToUse);
         } else if (val == 1) WRITE_LP36_DATA(0b10101010101010101010101010101010, maskToUse);
         else if (val == 2) WRITE_LP36_DATA(0b01010101010101010101010101010101, maskToUse);
@@ -237,20 +251,15 @@ int main(void){
         //4
         buf = READ_KEYS() & KEY2_MASK;
         if((buf != 0) && (val == 0) && (maskToUse == LP36_DATA_SQUA_MASK) && lastKey4Val != KEY2_MASK) { //if copy switch mode and square mode
-			offset = (offset+1)%SQUARE_LINE_SIZE;
-			squareShiftedValue &= ~(SW7_0_MASK  << (SQUARE_LINE_SIZE*offset)); //reset bits where SW7-SW0 will be written
-			squareShiftedValue |= (READ_LP36_DATA() & SQUARE_FIRST_LINE_MASK) << (SQUARE_LINE_SIZE*(offset-1)); //save current SW4-SW0 value to line[offset-1]
-            WRITE_LP36_DATA(squareShiftedValue, maskToUse);
+
+			WRITE_LP36_DATA(squareShiftedValue, maskToUse);
+
+            offset = (offset+1)%SQUARE_LINE_SIZE;
         }
         lastKey4Val = buf;
 
         //5
-        val = READ_KEYS() & KEY3_MASK;
-        if(val != 0) {
-        	all_max10_leds_off();
-            squareShiftedValue = 0;
-            lastKey4Val = 0;
-        }
+
     }
 
     return 0;
