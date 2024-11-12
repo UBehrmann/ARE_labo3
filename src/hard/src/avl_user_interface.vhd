@@ -23,6 +23,7 @@
 -- Modifications :
 -- Ver    Date        Engineer    Comments
 -- 0.0    See header  UB          Initial version
+-- 1.0    12.11.2024  UB          Final version
 
 ------------------------------------------------------------------------------------------
 
@@ -74,6 +75,14 @@ ARCHITECTURE rtl OF avl_user_interface IS
   CONSTANT INTERFACE_ID_C : STD_LOGIC_VECTOR(31 DOWNTO 0) := x"12345678";
   CONSTANT OTHERS_VAL_C : STD_LOGIC_VECTOR(31 DOWNTO 0) := x"00000000";
 
+  CONSTANT ID_ADDRESS : INTEGER := 0;
+  CONSTANT LED_ADDRESS : INTEGER := 1;
+  CONSTANT SWITCH_ADDRESS : INTEGER := 2;
+  CONSTANT BOUTTON_ADDRESS : INTEGER := 3;
+  CONSTANT LP36_VALID_AND_WE_ADDRESS : INTEGER := 4;
+  CONSTANT LP36_SEL_ADDRESS : INTEGER := 5;
+  CONSTANT LP36_DATA_ADDRESS : INTEGER := 6;
+
   --| Signals declarations   |--------------------------------------------------------------   
   SIGNAL led_reg_s : STD_LOGIC_VECTOR(9 DOWNTO 0);
   SIGNAL lp36_data_reg_s : STD_LOGIC_VECTOR(31 DOWNTO 0);
@@ -81,11 +90,11 @@ ARCHITECTURE rtl OF avl_user_interface IS
 
   SIGNAL boutton_s : STD_LOGIC_VECTOR(3 DOWNTO 0);
   SIGNAL switches_s : STD_LOGIC_VECTOR(9 DOWNTO 0);
-  
-  signal readdatavalid_next_s : std_logic;
-  signal readdatavalid_reg_s : std_logic;
-  signal readdata_next_s : std_logic_vector(31 downto 0);
-  signal readdata_reg_s : std_logic_vector(31 downto 0);
+
+  SIGNAL readdatavalid_next_s : STD_LOGIC;
+  SIGNAL readdatavalid_reg_s : STD_LOGIC;
+  SIGNAL readdata_next_s : STD_LOGIC_VECTOR(31 DOWNTO 0);
+  SIGNAL readdata_reg_s : STD_LOGIC_VECTOR(31 DOWNTO 0);
 
   SIGNAL cs_wr_lp36_data_s : STD_LOGIC;
   SIGNAL lp36_valide_s : STD_LOGIC;
@@ -102,7 +111,7 @@ ARCHITECTURE rtl OF avl_user_interface IS
     -- Error
     ERR
   );
-  signal e_pres, e_fut_s : state_t;
+  SIGNAL e_pres, e_fut_s : state_t;
 
 BEGIN
 
@@ -110,8 +119,9 @@ BEGIN
 
   boutton_s <= boutton_i;
   switches_s <= switch_i;
-    
-  lp36_valide_s <= '1' when lp36_status_i = "01" else '0';
+
+  lp36_valide_s <= '1' WHEN lp36_status_i = "01" ELSE
+    '0';
 
   -- Output signals
 
@@ -137,22 +147,22 @@ BEGIN
 
       CASE (to_integer(unsigned(avl_address_i))) IS
 
-        WHEN 0 =>
+        WHEN ID_ADDRESS =>
           readdata_next_s <= INTERFACE_ID_C;
 
-        WHEN 2 =>
+        WHEN SWITCH_ADDRESS =>
           readdata_next_s(9 DOWNTO 0) <= switch_i;
-			 
-        WHEN 3 =>
+
+        WHEN BOUTTON_ADDRESS =>
           readdata_next_s(3 DOWNTO 0) <= boutton_s;
 
-        WHEN 4 =>
+        WHEN LP36_VALID_AND_WE_ADDRESS =>
           readdata_next_s(0) <= lp36_valide_s;
           readdata_next_s(1) <= lp36_we_s;
-			 
-		  WHEN 6 =>
+
+        WHEN LP36_DATA_ADDRESS =>
           readdata_next_s <= lp36_data_reg_s;
-				  
+
         WHEN OTHERS =>
           readdata_next_s <= OTHERS_VAL_C;
 
@@ -181,15 +191,15 @@ BEGIN
   write_register_p : PROCESS (
     avl_reset_i,
     avl_clk_i,
-	 avl_write_i,
-	 avl_writedata_i,
+    avl_write_i,
+    avl_writedata_i,
     led_reg_s,
     lp36_data_reg_s,
     lp36_sel_reg_s,
-	 cs_wr_lp36_data_s
+    cs_wr_lp36_data_s
     )
   BEGIN
-	 
+
     IF avl_reset_i = '1' THEN
 
       led_reg_s <= (OTHERS => '0');
@@ -197,27 +207,27 @@ BEGIN
       lp36_sel_reg_s <= (OTHERS => '0');
 
     ELSIF rising_edge(avl_clk_i) THEN
-	 
-	 cs_wr_lp36_data_s <= '0';
+
+      cs_wr_lp36_data_s <= '0';
 
       IF avl_write_i = '1' THEN
 
         CASE (to_integer(unsigned(avl_address_i))) IS
 
-          WHEN 1 =>
+          WHEN LED_ADDRESS =>
             led_reg_s <= avl_writedata_i(9 DOWNTO 0);
 
-          WHEN 5 =>
-			   -- Write only if not in transfering mode
-			   IF lp36_we_s = '0' THEN
+          WHEN LP36_SEL_ADDRESS =>
+            -- Write only if not in transfering mode
+            IF lp36_we_s = '0' THEN
               lp36_sel_reg_s <= avl_writedata_i(3 DOWNTO 0);
-				END IF;
+            END IF;
 
-          WHEN 6 =>
+          WHEN LP36_DATA_ADDRESS =>
             -- Write only if not in transfering mode
             IF lp36_we_s = '0' THEN
               lp36_data_reg_s <= avl_writedata_i;
-				  cs_wr_lp36_data_s <= '1';
+              cs_wr_lp36_data_s <= '1';
             END IF;
 
           WHEN OTHERS =>
@@ -229,7 +239,7 @@ BEGIN
   END PROCESS;
 
   -- Interface management
-  
+
   -- Timer management
 
   timer_boutton : timer

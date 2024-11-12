@@ -145,7 +145,7 @@ int main(void){
         printf("MAX10 Config status invalid: %x\n", config_status);
         return -1;
     }
-¨
+
     // Reset all leds of Cyclone V and Max10
     WRITE_LEDS(0);
     all_max10_leds_off();
@@ -204,7 +204,7 @@ int main(void){
         // Select the leds to update
         int select_mode = (switches >> 8) & 0x3;
         int mask_to_use, sel_value;
-        
+
         switch (select_mode) {
             case 0:
                 mask_to_use = LP36_DATA_SEC1_MASK;
@@ -245,7 +245,7 @@ int main(void){
                 int shifted_second_line = second_line_value << (SQUARE_LINE_SIZE * ((offset + 1) % SQUARE_LINE_SIZE)); // Shift second line to next position
 
                 // Combine both shifted values into square_shifted_value
-                value_to_write = shifted_first_line | shifted_second_line;                
+                value_to_write = shifted_first_line | shifted_second_line;
             } else {
                 value_to_write = switches_low;
             }
