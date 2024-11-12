@@ -25,6 +25,7 @@
       - [Code C](#code-c)
 - [Tests](#tests)
   - [Simulation avec la console TCL-TK](#simulation-avec-la-console-tcl-tk)
+- [Conclusion](#conclusion)
 
 # Analyse
 
@@ -127,7 +128,7 @@ Pour cela, on a décidé d'utiliser un MSS avec 4 états: `ATT`, `GET_DATA`, `WA
 Pour avoir un cycle d'écriture de 1us, on doit déterminer combien de cycles de l'horloge du FPGA correspondent à 1us. Pour cela, on utilise la fréquence de l'horloge du bus Avalon qui est de 50MHz. Cela nous donne que un cycle de l'horloge correspond à 20ns. Pour avoir 1us, on doit donc attendre 50 cycles de l'horloge.
 
 #### Code C
-Dans le code C, on a choisi d'écrire toujours 0 pour les bits qui nous concerne pas (exemple: écriture dans les 10 leds: valeur écrite: 0x000003FF) bien que par la suite la partie FPGA s'assure n'écrire que les bits qui le doivent (les 10 derniers dans notre exemple). L'usage de macro C nous garantie une meilleur lisibilité du code et simplifie grandement les adaptation futures de celui-ci (par exemple si notre plan d'addressage change). Comme mentionné plus tôt dans ce rapport, pour pouvoir écrire dans lp36_sel il faut que lp36_wr soit à zéro et que le status de la max10 soit valide (c'est à dire lp36_status == 0b01). Ceci est donc fais dans le code avec une boucle d'écriture dans lp36_sel jusqu'à ce que ces deux conditions soit valide. L'usage d'une boucle peut sembler risqué mais wr étant maintenu que 1us la boucle ne devrait jamais durer trop longtemps et donc ne devrais pas mettre à mal le système.
+Dans le code C, on a choisi d'écrire toujours 0 pour les bits qui nous concerne pas (exemple: écriture dans les 10 leds: valeur écrite: 0x000003FF) bien que par la suite la partie FPGA s'assure n'écrire que les bits qui le doivent (les 10 derniers dans notre exemple). L'usage de macro C nous garantie une meilleur lisibilité du code et simplifie grandement les adaptation futures de celui-ci (par exemple si notre plan d'adressage change). Comme mentionné plus tôt dans ce rapport, pour pouvoir écrire dans lp36_sel il faut que lp36_wr soit à zéro et que le status de la max10 soit valide (c'est à dire lp36_status == 0b01). Ceci est donc fais dans le code avec une boucle d'écriture dans lp36_sel jusqu'à ce que ces deux conditions soit valide. L'usage d'une boucle peut sembler risqué mais wr étant maintenu que 1us la boucle ne devrait jamais durer trop longtemps et donc ne devrais pas mettre à mal le système.
 
 # Tests
 
@@ -137,5 +138,11 @@ Pour tester l'interface, on a utilisé la console TCL-TK pour simuler les entré
 
 20 sel
 24 data
+
+# Conclusion
+
+Dans ce laboratoire, on a crée une interface entre le CPU et la Max10. On a utilisé le bus Avalon pour communiquer entre les deux. On a crée un décodeur d'adresse pour gérer les différentes lectures et écritures. On a aussi crée un MSS pour la liaison avec la Max10. On a utilisé la console TCL-TK pour simuler les entrées du CPU et tester l'interface. Finalement, on a montré à Anthony Convers que notre interface fonctionne correctement le 12.11.2024.
+
+
 
 </div>
