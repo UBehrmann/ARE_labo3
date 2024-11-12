@@ -25,6 +25,7 @@
  * 4      8.11.2024   GoninG       Removed some bugs after test
  * 5      9.11.2024   GoninG       Code refactored with macro
  * 6      11.11.2024  GoninG       Debuging and testing, Bugs fixed
+ * 7      12.11.2024  GoninG       Shifting working the right way (hopefully)
  *
 *****************************************************************************************/
 #include <stdint.h>
@@ -131,7 +132,7 @@ int main(void){
         5. Afficher la constante ID de votre interface sur le bus Avalon au format
             hexadécimal dans la console de ARM-DS. */
         
-    int val, buf, maskToUse, squareShiftedValue, lastKey4Val;
+    int val, buf, maskToUse, squareShiftedValue, lastKey4Val, offset;
     //1.
     val = READ_LP36_STATUS();
     if(val != VALID_CONFIG_STATUS) {
@@ -157,6 +158,7 @@ int main(void){
 
 
     squareShiftedValue = 0;
+	offset = 0;
     lastKey4Val = 0;
     
     while (1) {
@@ -226,7 +228,7 @@ int main(void){
         buf = READ_SWITCHS() & SW7_0_MASK;
 
         if(val == 0) {
-            if(maskToUse == LP36_DATA_SQUA_MASK) WRITE_LP36_DATA((squareShiftedValue & (~SW7_0_MASK)) | (buf), maskToUse);
+            if(maskToUse == LP36_DATA_SQUA_MASK) WRITE_LP36_DATA(squareShiftedValue | ((buf & SQUARE_FIRST_LINE_MASK) << (SQUARE_LINE_SIZE*offset)), maskToUse);
             else WRITE_LP36_DATA(buf & maskToUse, maskToUse);
         } else if (val == 1) WRITE_LP36_DATA(0b10101010101010101010101010101010, maskToUse);
         else if (val == 2) WRITE_LP36_DATA(0b01010101010101010101010101010101, maskToUse);
@@ -235,7 +237,9 @@ int main(void){
         //4
         buf = READ_KEYS() & KEY2_MASK;
         if((buf != 0) && (val == 0) && (maskToUse == LP36_DATA_SQUA_MASK) && lastKey4Val != KEY2_MASK) { //if copy switch mode and square mode
-        	squareShiftedValue = ((squareShiftedValue & (~SW7_0_MASK)) | READ_LP36_DATA()) << SQUARE_LINE_SIZE;
+			offset = (offset+1)%SQUARE_LINE_SIZE;
+			squareShiftedValue &= ~(SW7_0_MASK  << (SQUARE_LINE_SIZE*offset)); //reset bits where SW7-SW0 will be written
+			squareShiftedValue |= (READ_LP36_DATA() & SQUARE_FIRST_LINE_MASK) << (SQUARE_LINE_SIZE*(offset-1)); //save current SW4-SW0 value to line[offset-1]
             WRITE_LP36_DATA(squareShiftedValue, maskToUse);
         }
         lastKey4Val = buf;
