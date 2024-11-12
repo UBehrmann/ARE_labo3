@@ -8,7 +8,7 @@
  *****************************************************************************************
  *
  * File                 : hps_application.c
-  * Author              : Guillaume Gonin
+  * Author              : Guillaume Gonin, Urs Behrmann
  * Date                 : 5.11.2024
  *
  * Context              : ARE lab
@@ -26,7 +26,7 @@
  * 5      9.11.2024   GoninG       Code refactored with macro
  * 6      11.11.2024  GoninG       Debuging and testing, Bugs fixed
  * 7      12.11.2024  GoninG       Shifting working the right way (hopefully)
- *
+ * 8      12.11.2024  BehrmannU    Refactoring after validation
 *****************************************************************************************/
 #include <stdint.h>
 #include <stdbool.h>
@@ -59,17 +59,17 @@ int __auto_semihosting;
 #define LP36_WR_MASK                   0x2 //1 bits
 #define LP36_SEL_OFF                   0x14
 #define LP36_SEL_MASK                  0x3 //2 bits, technically 4 bits but only 2 used
-#define LP36_SEL_SECOND1               0x0
-#define LP36_SEL_SECOND2               0x1
-#define LP36_SEL_2LINE                 0x2
-#define LP36_SEL_SQUARE                0x3
 #define LP36_DATA_OFF                  0x18
 #define LP36_DATA_SEC1_MASK            0x3FFFFFFF //30 bits
 #define LP36_DATA_SEC2_MASK            0x3FFFFFFF //30 bits
 #define LP36_DATA_LINE_MASK            0xFFFFFFFF //32 bits
 #define LP36_DATA_SQUA_MASK            0x1FFFFFF //25 bits
 
-//READ/WRITE Macros
+#define LEDS_PATTERN_A               0b10101010101010101010101010101010
+#define LEDS_PATTERN_B               0b01010101010101010101010101010101
+#define LEDS_PATTERN_C               0b11111111111111111111111111111111
+
+// READ / WRITE Macros
 #define READ_CONST_AXI_LW()            (AXI_LW_REG(CONST_AXI_LW_OFF) & CONST_AXI_LW_MASK) //using mask isn't useful because our interface do it aswell but it stay a good habit
 #define READ_CONST_INT()               (INTERFACE_REG(CONST_INT_OFF) & CONST_INT_MASK)
 #define READ_KEYS()                    (~(INTERFACE_REG(KEYS_OFF) & KEYS_MASK)) //inverse keys value because active low
@@ -81,7 +81,7 @@ int __auto_semihosting;
 #define WRITE_LP36_SEL(_x_)            (INTERFACE_REG(LP36_SEL_OFF) = ((_x_) & LP36_SEL_MASK))
 #define WRITE_LP36_DATA(_x_, _MASK_)   (INTERFACE_REG(LP36_DATA_OFF) = ((_x_) & _MASK_)) // _MASK_ is the mask to apply, depends on lp36_sel
 
-//Local use
+// Local use
 #define VALID_CONFIG_STATUS            0x1
 #define SW7_0_MASK                     0xFF
 #define KEY1_0_MASK                    0x3
@@ -90,32 +90,39 @@ int __auto_semihosting;
 #define SQUARE_LINE_SIZE               5
 #define SQUARE_FIRST_LINE_MASK		   0x1F
 #define SQUARE_SECOND_LINE_MASK		   0xE0
+
 #define CANT_WRITE_SEL                 ((READ_LP36_WR() == 1) || (READ_LP36_STATUS() == 0)) //if lp36_wr == 1 or FPGA thrown an error we can't write
 
+enum LP36Select {
+    SECONDARY_1 = 0,
+    SECONDARY_2 = 1,
+    TWO_LINE = 2,
+    SQUARE = 3
+};
+
 void all_max10_leds_off(void) {
-    do {
-    	WRITE_LP36_SEL(LP36_SEL_SECOND1);
-    } while(CANT_WRITE_SEL);
+    int select_vals[] = {
+        SECONDARY_1,
+        SECONDARY_2,
+        TWO_LINE,
+        SQUARE
+        };
 
-    WRITE_LP36_DATA(0, LP36_DATA_SEC1_MASK);
+    int mask_vals[] = {
+        LP36_DATA_SEC1_MASK,
+        LP36_DATA_SEC2_MASK,
+        LP36_DATA_LINE_MASK,
+        LP36_DATA_SQUA_MASK
+        };
 
-    do {
-    	WRITE_LP36_SEL(LP36_SEL_SECOND2);
-    } while(CANT_WRITE_SEL);
+    for (int i = 0; i < 4; ++i) {
 
-    WRITE_LP36_DATA(0, LP36_DATA_SEC2_MASK);
+    	while (CANT_WRITE_SEL);
 
-    do {
-        WRITE_LP36_SEL(LP36_SEL_2LINE);
-    } while(CANT_WRITE_SEL);
+    	WRITE_LP36_SEL(select_vals[i]);
 
-    WRITE_LP36_DATA(0, LP36_DATA_LINE_MASK);
-
-    do {
-        WRITE_LP36_SEL(LP36_SEL_SQUARE);
-    } while(CANT_WRITE_SEL);
-
-    WRITE_LP36_DATA(0, LP36_DATA_SQUA_MASK);
+        WRITE_LP36_DATA(CONST_INT_OFF, mask_vals[i]);
+    }
 }
 
 int main(void){
@@ -133,34 +140,22 @@ int main(void){
         5. Afficher la constante ID de votre interface sur le bus Avalon au format
             hexadécimal dans la console de ARM-DS. */
         
-    int val, buf, maskToUse, squareShiftedValue, lastKey4Val, offset;
-    //1.
-    val = READ_LP36_STATUS();
-    if(val != VALID_CONFIG_STATUS) {
-        printf("MAX10 Config status:%x\n", val);
+    int config_status = READ_LP36_STATUS();
+    if(config_status != VALID_CONFIG_STATUS) {
+        printf("MAX10 Config status invalid: %x\n", config_status);
         return -1;
     }
-
-    //2.
+¨
+    // Reset all leds of Cyclone V and Max10
     WRITE_LEDS(0);
-
-    //3
     all_max10_leds_off();
 
-    //4
-    val = READ_CONST_AXI_LW();
-    printf("AXI LW Const32:%x\n", val);
+    // Output the constant values of the Avalon bus and our interface
+    printf("AXI LW Const32: %x\n", (unsigned)READ_CONST_AXI_LW());
+    printf("Our interface Const32: %x\n", (unsigned)READ_CONST_INT());
 
-    //5
-    val = READ_CONST_INT();
-    printf("Our interface Const32:%x\n", val);
-
-
-
-
-    squareShiftedValue = 0;
-	offset = 0;
-    lastKey4Val = 0;
+	int offset = 0;
+    int last_key2_val = 0;
     
     while (1) {
         /*  Ensuite pendant l’exécution du programme, à tout instant les actions suivantes doivent
@@ -187,79 +182,89 @@ int main(void){
             Eteindre toutes les leds de la carte Max10_leds. */
 
 		// check if the MAX10 is always connected and the good status
-       	val = READ_LP36_STATUS();
-		if(val != VALID_CONFIG_STATUS) {
-			printf("MAX10 Config status:%x\n", val);
+       	config_status = READ_LP36_STATUS();
+		if(READ_LP36_STATUS() != VALID_CONFIG_STATUS) {
+			printf("MAX10 Config status invalid: %x\n", config_status);
 			return -1;
 		}
 
-        //1
-        val = READ_SWITCHS();
-        WRITE_LEDS(val);
+        // Read the switches and keys
+        int switches = READ_SWITCHS();
+        int keys = READ_KEYS();
 
-        //2
-        val = (val >> 8); //slide SW8 on bit 0
-        switch (val)
-        {
-        case 0:
-            maskToUse = LP36_DATA_SEC1_MASK;
-            buf = 0;
-            break;
-        case 1:
-            maskToUse = LP36_DATA_SEC2_MASK;
-            buf = 1;
-            break;
-        case 2:
-            maskToUse = LP36_DATA_LINE_MASK;
-            buf = 2;
-            break;
-        case 3:
-            maskToUse = LP36_DATA_SQUA_MASK;
-            buf = 3;
-            break;
-        }
+        // Copy the switches to the leds
+        WRITE_LEDS(switches);
 
-        do {
-        	WRITE_LP36_SEL(buf);
-        } while(CANT_WRITE_SEL);
-
-        val = READ_KEYS() & KEY3_MASK;
-        if(val != 0) {
+        // Check if we need to turn off all the leds
+        if (keys & KEY3_MASK) {
         	all_max10_leds_off();
-        	squareShiftedValue = 0;
-        	lastKey4Val = 0;
         	continue;
         }
 
-
-        //3
-        val = READ_KEYS() & KEY1_0_MASK;
-        buf = READ_SWITCHS() & SW7_0_MASK;
-
-        if(val == 0) {
-            if(maskToUse == LP36_DATA_SQUA_MASK)
-            {
-            	squareShiftedValue =  (READ_SWITCHS() & SQUARE_FIRST_LINE_MASK) << (SQUARE_LINE_SIZE*(offset)); //reset bits where SW4-SW0 will be written
-            	squareShiftedValue |= ((READ_SWITCHS() & SQUARE_SECOND_LINE_MASK) >> 5) << (SQUARE_LINE_SIZE*((offset+1)%SQUARE_LINE_SIZE));
-            	WRITE_LP36_DATA(squareShiftedValue | ((buf & SQUARE_FIRST_LINE_MASK) << (SQUARE_LINE_SIZE*offset)), maskToUse);
-            }
-            else WRITE_LP36_DATA(buf & maskToUse, maskToUse);
-        } else if (val == 1) WRITE_LP36_DATA(0b10101010101010101010101010101010, maskToUse);
-        else if (val == 2) WRITE_LP36_DATA(0b01010101010101010101010101010101, maskToUse);
-        else if (val == 3) WRITE_LP36_DATA(0b11111111111111111111111111111111, maskToUse);
-
-        //4
-        buf = READ_KEYS() & KEY2_MASK;
-        if((buf != 0) && (val == 0) && (maskToUse == LP36_DATA_SQUA_MASK) && lastKey4Val != KEY2_MASK) { //if copy switch mode and square mode
-
-			WRITE_LP36_DATA(squareShiftedValue, maskToUse);
-
-            offset = (offset+1)%SQUARE_LINE_SIZE;
+        // Select the leds to update
+        int select_mode = (switches >> 8) & 0x3;
+        int mask_to_use, sel_value;
+        
+        switch (select_mode) {
+            case 0:
+                mask_to_use = LP36_DATA_SEC1_MASK;
+                sel_value = SECONDARY_1;
+                break;
+            case 1:
+                mask_to_use = LP36_DATA_SEC2_MASK;
+                sel_value = SECONDARY_2;
+                break;
+            case 2:
+                mask_to_use = LP36_DATA_LINE_MASK;
+                sel_value = TWO_LINE;
+                break;
+            case 3:
+                mask_to_use = LP36_DATA_SQUA_MASK;
+                sel_value = SQUARE;
+                break;
         }
-        lastKey4Val = buf;
 
-        //5
+        // Write the selected leds
+        do {
+            WRITE_LP36_SEL(sel_value);
+        } while (CANT_WRITE_SEL);
 
+        // Write the data to the leds
+        int display_pattern = keys & KEY1_0_MASK;
+        int switches_low = switches & SW7_0_MASK;
+        int value_to_write = 0;
+
+        if (display_pattern == 0) {
+            if (mask_to_use == LP36_DATA_SQUA_MASK) {
+                // Isolate the first and second line values from switches_low
+                int first_line_value = switches_low & SQUARE_FIRST_LINE_MASK;    // Extracts bits for the first line (SW0 to SW4)
+                int second_line_value = (switches_low & SQUARE_SECOND_LINE_MASK) >> 5; // Extracts bits for the second line (SW5 to SW9)
+
+                // Shift the isolated values to their correct positions based on offset
+                int shifted_first_line = first_line_value << (SQUARE_LINE_SIZE * offset); // Shift first line to correct position
+                int shifted_second_line = second_line_value << (SQUARE_LINE_SIZE * ((offset + 1) % SQUARE_LINE_SIZE)); // Shift second line to next position
+
+                // Combine both shifted values into square_shifted_value
+                value_to_write = shifted_first_line | shifted_second_line;                
+            } else {
+                value_to_write = switches_low;
+            }
+        } else if (display_pattern == 1) {
+            value_to_write = LEDS_PATTERN_A;
+        } else if (display_pattern == 2) {
+            value_to_write = LEDS_PATTERN_B;
+        } else if (display_pattern == 3) {
+            value_to_write = LEDS_PATTERN_C;
+        }
+
+        // Write the value to the leds of the Max10
+        WRITE_LP36_DATA(value_to_write, mask_to_use);
+
+        // Check if we need to shift the square
+        if ((keys & KEY2_MASK) && display_pattern == 0 && mask_to_use == LP36_DATA_SQUA_MASK && !last_key2_val) {
+            offset = (offset + 1) % SQUARE_LINE_SIZE;
+        }
+        last_key2_val = keys & KEY2_MASK ? 1 : 0;
     }
 
     return 0;
