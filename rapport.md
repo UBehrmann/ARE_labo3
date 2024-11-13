@@ -128,7 +128,8 @@ Pour cela, on a décidé d'utiliser un MSS avec 4 états: `ATT`, `GET_DATA`, `WA
 Pour avoir un cycle d'écriture de 1us, on doit déterminer combien de cycles de l'horloge du FPGA correspondent à 1us. Pour cela, on utilise la fréquence de l'horloge du bus Avalon qui est de 50MHz. Cela nous donne que un cycle de l'horloge correspond à 20ns. Pour avoir 1us, on doit donc attendre 50 cycles de l'horloge.
 
 #### Code C
-Dans le code C, on a choisi d'écrire toujours 0 pour les bits qui nous concerne pas (exemple: écriture dans les 10 leds: valeur écrite: 0x000003FF) bien que par la suite la partie FPGA s'assure n'écrire que les bits qui le doivent (les 10 derniers dans notre exemple). L'usage de macro C nous garantie une meilleur lisibilité du code et simplifie grandement les adaptation futures de celui-ci (par exemple si notre plan d'adressage change). Comme mentionné plus tôt dans ce rapport, pour pouvoir écrire dans lp36_sel il faut que lp36_wr soit à zéro et que le status de la max10 soit valide (c'est à dire lp36_status == 0b01). Ceci est donc fais dans le code avec une boucle d'écriture dans lp36_sel jusqu'à ce que ces deux conditions soit valide. L'usage d'une boucle peut sembler risqué mais wr étant maintenu que 1us la boucle ne devrait jamais durer trop longtemps et donc ne devrais pas mettre à mal le système.
+
+Dans le code C, on a choisi d'écrire toujours 0 pour les bits qui nous concerne pas (exemple: écriture dans les 10 leds: valeur écrite: 0x000003FF) bien que par la suite la partie FPGA s'assure de n'écrire que les bits qui le doivent (les 10 derniers dans notre exemple). L'usage de macro C nous garantie une meilleur lisibilité du code et simplifie grandement les adaptation futures de celui-ci (par exemple si notre plan d'adressage change). Comme mentionné plus tôt dans ce rapport, pour pouvoir écrire dans lp36_sel il faut que lp36_wr soit à zéro et que le status de la max10 soit valide (c'est à dire lp36_status == 0b01). Ceci est donc fait dans le code avec une boucle d'écriture dans lp36_sel jusqu'à ce que ces deux conditions soient valides. L'usage d'une boucle peut sembler risqué mais wr étant maintenu que 1us la boucle ne devrait jamais durer trop longtemps et donc ne devrait pas mettre à mal le système.
 
 # Tests
 
@@ -138,6 +139,33 @@ Pour tester l'interface, on a utilisé la console TCL-TK pour simuler les entré
 
 20 sel
 24 data
+
+## Test du C sur la carte DE1-SoC avec la carte d'extension MAX10
+
+Pour tester le C, on a dû, dans un premier temps, tester la partie FPGA. En effet, sans notre interface il est compliqué de testé la partie C qui communique avec la carte justement en passant par notre interface.
+Par la suite il nous à suffit de tester l'ensemble des fonctionnalités du labo avec la DE1-SoC et la MAX10. Pour ceci, rien de plus simple, il suffit de valider le comportement quand on change tel ou tel switch ou qu'on appui sur tel ou tel bouton en confirmant que les leds attendues à être allumées le soit et que les autres soit éteintes.
+
+
+Voici le banc de test que nous avons utilisé:
+
+| No | Fonctionnalitée/s testée/s                       | Scénario                                                                     |  Résultat attendu                                                                                    | 
+| -- | ------------------------------------------------ | ---------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------- | 
+| 1  | Réplication des switcht 0-8 sur les leds 0-8     | Éteindre tous les switchs puis allumer l'un après l'autre ou tous à la fois. | Les leds s'allument ou s'éteignent en fonctions des switchs correspondant.                           | 
+| 2  | Sélection des leds avec les switchs 9-10         | Tester toutes les combinaisons de SW9-10 avec un autre switch d'allumé       | Les leds s'allument au bon endroit (carré, ligne, demi-cercle1, demi-cercle2).                       | 
+| 3  | Choix du comportement des leds avec les keys 0-1 | Appuyer sur key0, puis key1, enfin key0 et 1 simultanément                   | Les leds s'allument avec 0101.. puis avec 1010.. puis 1111.. et au relachement réplique les switchs. | 
+| 4  | Reset des leds avec key 3                        | Appuyer sur key 3                                                            | Les leds s'éteignent (sauf celles séléctionnées car réplique les switchs 8-0).                       | 
+| 5  | Décalage avec key 2                              | Appuyer sur key 2 et modifier les switchs, le refaire encore 4 fois.         | Les leds reste allumées et la ligne suivante réplique les switchs.                                   | 
+
+## Résultat des test C
+
+| No | Statut | 
+| -- | -------|
+| 1  | OK     |
+| 2  | OK     |
+| 3  | OK     |
+| 4  | OK     |
+| 5  | OK     |
+
 
 # Conclusion
 
