@@ -25,6 +25,8 @@
       - [Code C](#code-c)
 - [Tests](#tests)
   - [Simulation avec la console TCL-TK](#simulation-avec-la-console-tcl-tk)
+  - [Test du C sur la carte DE1-SoC avec la carte d'extension MAX10](#test-du-c-sur-la-carte-de1-soc-avec-la-carte-dextension-max10)
+  - [Résultat des test C](#résultat-des-test-c)
 - [Conclusion](#conclusion)
 
 # Analyse
@@ -137,6 +139,18 @@ Dans le code C, on a choisi d'écrire toujours 0 pour les bits qui nous concerne
 
 Pour tester l'interface, on a utilisé la console TCL-TK pour simuler les entrées du CPU. On a crée une série de commandes dans la console pour simuler les lectures et écritures sur l'interface. 
 
+| Commande | Description                    | Résultat attendu |
+| -------- | ------------------------------ | ---------------- |
+| R 0x0000 | Lecture de l'ID de l'interface | 0x12345678       |
+| W 0x0004 | Ecriture des leds              | 0x2AA            |
+| R 0x0008 | Lecture des switches           | 0x2AA            |
+| R 0x000C | Lecture des keys               | 0x2              |
+| R 0x0010 | Lecture du status du lp36      | 0x1              |
+| W 0x0014 | Ecriture du lp36_sel           | 0x1              |
+| W 0x0018 | Ecriture du lp36_data          | 0xf0             |
+| R 0x0010 | Lecture du status du lp36      | 0x10              |
+
+
 20 sel
 24 data
 
@@ -148,23 +162,23 @@ Par la suite il nous à suffit de tester l'ensemble des fonctionnalités du labo
 
 Voici le banc de test que nous avons utilisé:
 
-| No | Fonctionnalitée/s testée/s                       | Scénario                                                                     |  Résultat attendu                                                                                    | 
-| -- | ------------------------------------------------ | ---------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------- | 
-| 1  | Réplication des switcht 0-8 sur les leds 0-8     | Éteindre tous les switchs puis allumer l'un après l'autre ou tous à la fois. | Les leds s'allument ou s'éteignent en fonctions des switchs correspondant.                           | 
-| 2  | Sélection des leds avec les switchs 9-10         | Tester toutes les combinaisons de SW9-10 avec un autre switch d'allumé       | Les leds s'allument au bon endroit (carré, ligne, demi-cercle1, demi-cercle2).                       | 
-| 3  | Choix du comportement des leds avec les keys 0-1 | Appuyer sur key0, puis key1, enfin key0 et 1 simultanément                   | Les leds s'allument avec 0101.. puis avec 1010.. puis 1111.. et au relachement réplique les switchs. | 
-| 4  | Reset des leds avec key 3                        | Appuyer sur key 3                                                            | Les leds s'éteignent (sauf celles séléctionnées car réplique les switchs 8-0).                       | 
-| 5  | Décalage avec key 2                              | Appuyer sur key 2 et modifier les switchs, le refaire encore 4 fois.         | Les leds reste allumées et la ligne suivante réplique les switchs.                                   | 
+| No  | Fonctionnalitée/s testée/s                       | Scénario                                                                     | Résultat attendu                                                                                     |
+| --- | ------------------------------------------------ | ---------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------- |
+| 1   | Réplication des switcht 0-8 sur les leds 0-8     | Éteindre tous les switchs puis allumer l'un après l'autre ou tous à la fois. | Les leds s'allument ou s'éteignent en fonctions des switchs correspondant.                           |
+| 2   | Sélection des leds avec les switchs 9-10         | Tester toutes les combinaisons de SW9-10 avec un autre switch d'allumé       | Les leds s'allument au bon endroit (carré, ligne, demi-cercle1, demi-cercle2).                       |
+| 3   | Choix du comportement des leds avec les keys 0-1 | Appuyer sur key0, puis key1, enfin key0 et 1 simultanément                   | Les leds s'allument avec 0101.. puis avec 1010.. puis 1111.. et au relachement réplique les switchs. |
+| 4   | Reset des leds avec key 3                        | Appuyer sur key 3                                                            | Les leds s'éteignent (sauf celles séléctionnées car réplique les switchs 8-0).                       |
+| 5   | Décalage avec key 2                              | Appuyer sur key 2 et modifier les switchs, le refaire encore 4 fois.         | Les leds reste allumées et la ligne suivante réplique les switchs.                                   |
 
 ## Résultat des test C
 
-| No | Statut | 
-| -- | -------|
-| 1  | OK     |
-| 2  | OK     |
-| 3  | OK     |
-| 4  | OK     |
-| 5  | OK     |
+| No  | Statut |
+| --- | ------ |
+| 1   | OK     |
+| 2   | OK     |
+| 3   | OK     |
+| 4   | OK     |
+| 5   | OK     |
 
 
 # Conclusion
